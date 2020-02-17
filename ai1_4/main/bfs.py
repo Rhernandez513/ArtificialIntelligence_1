@@ -1,8 +1,9 @@
+#!/usr/bin/python3
 def main():
     None
 
 
-def foo():
+def foo(input):
     return 1
 
 
