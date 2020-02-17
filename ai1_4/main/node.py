@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # some code taken from https://github.com/aimacode/aima-python
 
+
 class Node:
 
     def __init__(self, state, parent=None, action=None, path_cost=0):
@@ -9,9 +10,9 @@ class Node:
         self.parent = parent
         self.action = action
         self.path_cost = path_cost
-        # self.depth = 0
-        # if parent:
-        #     self.depth = parent.depth + 1
+        self.depth = 0
+        if parent:
+            self.depth = parent.depth + 1
 
 # private called
     def child_node(self, problem, action):
@@ -26,17 +27,17 @@ class Node:
         return [self.child_node(problem, action)
                 for action in problem.actions(self.state)]
 
-    # def solution(self):
-    #     """Return the sequence of actions to go from the root to this node."""
-    #     return [node.action for node in self.path()[1:]]
+    def solution(self):
+        """Return the sequence of possible_actions to go from the root to this node."""
+        return [node.action for node in self.path()[1:]]
 
-    # def path(self):
-    #     """Return a list of nodes forming the path from the root to this node."""
-    #     node, path_back = self, []
-    #     while node:
-    #         path_back.append(node)
-    #         node = node.parent
-    #     return list(reversed(path_back))
+    def path(self):
+        """Return a list of nodes forming the path from the root to this node."""
+        node, path_back = self, []
+        while node:
+            path_back.append(node)
+            node = node.parent
+        return list(reversed(path_back))
 
     # since in breadth_first_graph_search and a_star search we want to consider equals states as equal nodes
     def __eq__(self, other):

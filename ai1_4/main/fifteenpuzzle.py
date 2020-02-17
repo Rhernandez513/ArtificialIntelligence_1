@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # some code taken from https://github.com/aimacode/aima-python
-
 import numpy
+from enum import Enum
 
 
 class FifteenPuzzle:
@@ -15,42 +15,74 @@ class FifteenPuzzle:
         # return state == self.goal
         return numpy.array_equal(state, self.goal)
 
-    # class actions(Enum):
-    #     UP = 1
-    #     DOWN = 2
-    #     LEFT = 3
-    #     RIGHT = 4
+    class possible_actions(Enum):
+        UP = 1
+        DOWN = 2
+        LEFT = 3
+        RIGHT = 4
 
 # private called
     def actions(self, state):
-        result = list()
+        available_actions = list()
+        available_actions.append(self.possible_actions.UP, self.possible_actions.DOWN, self.possible_actions.LEFT, self.possible_actions.RIGHT)
+
         xy_pair = numpy.argwhere(state == 0)
         x = xy_pair[0, 0]
         y = xy_pair[0, 0]
 
         if x == 3:
             # Disallow right movement
-            None
-        elif y == 3:
-            # Disallow down movement
-            None
+            available_actions.remove(self.possible_actions.RIGHT)
         elif x == 0:
             # Disallow left movement
-            None
+            available_actions.remove(self.possible_actions.LEFT)
+        if y == 3:
+            # Disallow down movement
+            available_actions.remove(self.possible_actions.DOWN)
         elif y == 0:
             # Disallow up movement
-            None
+            available_actions.remove(self.possible_actions.UP)
 
-        return result
+        return available_actions
 
 # private called
     def result(self, state, action):
         """Return the state that results from executing the given
         action in the given state. The action must be one of
-        self.actions(state)."""
-        None
+        self.possible_actions(state)."""
+        if not isinstance(action, self.possible_actions):
+            raise TypeError("must be possible_action Enum")
 
-# private called
+        blank = numpy.argwhere(state == 0)
+
+        if action.value == self.possible_actions.UP:
+            # swap zero with one above it
+            x = blank[0, 0]
+            y = blank[0, 1]
+            state[x, y] = state[x, y + 1]
+            state[x, y + 1] = 0
+        elif action.value == self.possible_actions.DOWN:
+            # swap zero with one below it
+            x = blank[0, 0]
+            y = blank[0, 1]
+            state[x, y] = state[x, y - 1]
+            state[x, y - 1] = 0
+        elif action.value == self.possible_actions.RIGHT:
+            # swap zero with one to the right
+            x = blank[0, 0]
+            y = blank[0, 1]
+            state[x, y] = state[x + 1, y]
+            state[x + 1, y] = 0
+        elif action.value == self.possible_actions.LEFT:
+            # swap zero with one to the left
+            x = blank[0, 0]
+            y = blank[0, 1]
+            state[x, y] = state[x - 1, y]
+            state[x - 1, y] = 0
+
+        return state
+
+    # private called
     def path_cost(self, c, state1, action, state2):
         """Return the cost of a solution path that arrives at state2 from
         state1 via action, assuming cost c to get up to state1. If the problem
