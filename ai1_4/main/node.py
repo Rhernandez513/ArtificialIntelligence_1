@@ -43,9 +43,9 @@ class Node:
     def __eq__(self, other):
         return isinstance(other, Node) and self.state == other.state
 
-    # def __hash__(self):
-    #     # We use the hash value of the state
-    #     # stored in the node instead of the node
-    #     # object itself to quickly search a node
-    #     # with the same state in a Hash Table
-    #     return hash(self.state)
+    def __hash__(self):
+        # We use the hash value of the state
+        # stored in the node instead of the node
+        # object itself to quickly search a node
+        # with the same state in a Hash Table
+        return hash(self.state)

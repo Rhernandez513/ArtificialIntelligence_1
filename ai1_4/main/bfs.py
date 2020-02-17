@@ -16,8 +16,8 @@ def create_state(input_string):
 
     value_matrix = numpy.zeros((4, 4), int)
 
-    for x in range(3):
-        for y in range(3):
+    for x in range(4):
+        for y in range(4):
             value_matrix[x, y] = values.pop()
 
     return value_matrix
@@ -50,10 +50,12 @@ def bfs(fifteen_puzzle, expanded_count):
     explored_states = set()
     while unexplored_nodes:
         node = unexplored_nodes.popleft()
-        explored_states.add(node.state)
+        # TODO
+        # how to convert to a list or a set or something that can be added to a set?
+        explored_states.add(node.state.ravel())
         for idx, element in enumerate(node.expand(fifteen_puzzle)):
             expanded_count = expanded_count + 1
-            if element.state not in explored_states and element not in unexplored_nodes:
+            if element.state.ravel() not in explored_states and element not in unexplored_nodes:
                 if fifteen_puzzle.is_goal_state(element.state):
                     print("Nodes expanded: " + expanded_count)
                     print("Memory used: " + pympler.asizeof.asizeof(explored_states))
