@@ -24,24 +24,27 @@ class FifteenPuzzle:
 # private called
     def actions(self, state):
         available_actions = list()
-        available_actions.append(self.possible_actions.UP, self.possible_actions.DOWN, self.possible_actions.LEFT, self.possible_actions.RIGHT)
+        available_actions.append(self.possible_actions.UP)
+        available_actions.append(self.possible_actions.DOWN)
+        available_actions.append(self.possible_actions.LEFT)
+        available_actions.append(self.possible_actions.RIGHT)
 
         xy_pair = numpy.argwhere(state == 0)
         x = xy_pair[0, 0]
-        y = xy_pair[0, 0]
+        y = xy_pair[0, 1]
 
         if x == 3:
-            # Disallow right movement
-            available_actions.remove(self.possible_actions.RIGHT)
-        elif x == 0:
-            # Disallow left movement
-            available_actions.remove(self.possible_actions.LEFT)
-        if y == 3:
             # Disallow down movement
             available_actions.remove(self.possible_actions.DOWN)
-        elif y == 0:
+        elif x == 0:
             # Disallow up movement
             available_actions.remove(self.possible_actions.UP)
+        if y == 3:
+            # Disallow right movement
+            available_actions.remove(self.possible_actions.RIGHT)
+        elif y == 0:
+            # Disallow left movement
+            available_actions.remove(self.possible_actions.LEFT)
 
         return available_actions
 
@@ -55,30 +58,30 @@ class FifteenPuzzle:
 
         blank = numpy.argwhere(state == 0)
 
-        if action.value == self.possible_actions.UP:
+        if action == self.possible_actions.UP:
             # swap zero with one above it
-            x = blank[0, 0]
-            y = blank[0, 1]
-            state[x, y] = state[x, y + 1]
-            state[x, y + 1] = 0
-        elif action.value == self.possible_actions.DOWN:
-            # swap zero with one below it
-            x = blank[0, 0]
-            y = blank[0, 1]
-            state[x, y] = state[x, y - 1]
-            state[x, y - 1] = 0
-        elif action.value == self.possible_actions.RIGHT:
-            # swap zero with one to the right
-            x = blank[0, 0]
-            y = blank[0, 1]
-            state[x, y] = state[x + 1, y]
-            state[x + 1, y] = 0
-        elif action.value == self.possible_actions.LEFT:
-            # swap zero with one to the left
             x = blank[0, 0]
             y = blank[0, 1]
             state[x, y] = state[x - 1, y]
             state[x - 1, y] = 0
+        elif action == self.possible_actions.DOWN:
+            # swap zero with one below it
+            x = blank[0, 0]
+            y = blank[0, 1]
+            state[x, y] = state[x + 1, y]
+            state[x + 1, y] = 0
+        elif action == self.possible_actions.RIGHT:
+            # swap zero with one to the right
+            x = blank[0, 0]
+            y = blank[0, 1]
+            state[x, y] = state[x, y + 1]
+            state[x, y + 1] = 0
+        elif action == self.possible_actions.LEFT:
+            # swap zero with one to the left
+            x = blank[0, 0]
+            y = blank[0, 1]
+            state[x, y] = state[x, y - 1]
+            state[x, y - 1] = 0
 
         return state
 
