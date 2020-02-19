@@ -12,12 +12,16 @@ public class Main {
 
     // TODO
     // formulate state object from string input
+    String input = "";
+    String goalString = "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0 ";
+    int[][] initialState = getStateFromSting(input);
+    int[][] goalState = getStateFromSting(goalString);
 
     // time
     long startTime = System.nanoTime();
 
     // execute BFS
-    //      public static String breadthFirstSearch(String problem);
+    String solution = breadthFirstSearch(new Problem(initialState, goalState));
 
     // show time
     long endTime = System.nanoTime();
@@ -26,61 +30,61 @@ public class Main {
     // calculate memory used
     int megabyte = 1024 * 1024;
     Runtime runtime = Runtime.getRuntime();
-    System.out.print(
-        "Memory used by JVM at Runtime: "
-            + (runtime.totalMemory() - runtime.freeMemory()) / megabyte);
+    System.out.print( "Memory used by JVM at Runtime: " + getMemoryUsed());
     System.out.println("MB");
     System.out.println("Java uses a whole LOT of memory...");
   }
 
-  //    function BREADTH-FIRST-SEARCH(problem) returns a solution, or failure
-  public static String breadthFirstSearch(Problem problem) {
-    //        node <- a node with STATE=problem.INITIAL-STATE, PATH-COST=0
-    Node node = new Node(problem.initialState, 0);
-    //        if problem.GOAL-TEST(node.STATE) then return SOLUTION(node)
-    if (problem.goalTest(node.state)) { return node.solution(); }
-    //        frontier <- a FIFO queue with node as the only element
-    Queue<Node> frontier = new ArrayDeque<>(); frontier.add(node);
-    //        explored <- an empty set
-    Set<String> explored = new HashSet<>();
+  static int[][] getStateFromSting(String input) {
+    return new int[][] { };
+  }
 
-    //        loop do
-    //            if EMPTY?(frontier) then return failure
-    while(!frontier.isEmpty()) {
-      //            node <- POP(frontier) /* chooses the shallowest node in frontier */
+  static long getMemoryUsed() {
+    int megabyte = 1024 * 1024;
+    Runtime runtime = Runtime.getRuntime();
+    return (runtime.totalMemory() - runtime.freeMemory() / megabyte);
+  }
+
+  // "done"
+  static String breadthFirstSearch(Problem problem) {
+    Node node = new Node(problem.initialState, 0);
+    if (problem.goalTest(node.state)) {
+      return node.solution();
+    }
+
+    Queue<Node> frontier = new ArrayDeque<>();
+    frontier.add(node);
+    Set<int[][]> explored = new HashSet<>();
+
+    while (!frontier.isEmpty()) {
       node = frontier.poll();
-      //            add node.STATE to explored
       explored.add(node.state);
-      //            for each action in problem.ACTIONS(node.STATE) do
-      for(String action : problem.actions(node.state)) {
-        //                child <- CHILD-NODE(problem, node, action)
+      for (String action : problem.actions(node.state)) {
         Node child = node.childNode(problem, action);
-        //                if child.STATE is not in explored or frontier then
-        if(explored.contains(child.state) || frontier.contains(child.state)) {
-          //                    if problem.GOAL-TEST(child.STATE) then return SOLUTION(child)
-          if (problem.goalTest(child.state)) { return child.solution(); }
-          //                    frontier <- INSERT(child, frontier)
+        if (explored.contains(child.state) || frontier.contains(child.state)) {
+          if (problem.goalTest(child.state)) {
+            return child.solution();
+          }
           frontier.add(child);
         }
       }
-
     }
     return null;
   }
 }
 
 class Node {
-  String state;
+  int[][] state;
   int pathCost;
-  String parent;
+  Node parent;
   String action;
 
-  Node(String state, int pathCost) {
+  Node(int[][] state, int pathCost) {
     this.state = state;
     this.pathCost = pathCost;
   }
 
-  Node(String state, String parent, String action, int pathCost) {
+  Node(int[][] state, Node parent, String action, int pathCost) {
     this.state = state;
     this.parent = parent;
     this.action = action;
@@ -91,11 +95,11 @@ class Node {
     return null;
   }
 
+  // "done"
   Node childNode(Problem problem, String action) {
-//    next_state = problem.result(self.state, action)
-//    next_node = Node(next_state, self, action, problem.path_cost(self.path_cost, self.state, action, next_state))
-//    return next_node
-    return null;
+    int[][] nextState = problem.result(this.state, action);
+    Node nextNode = new Node(nextState, this, action, problem.pathCost(1, this.state, action, nextState));
+    return nextNode;
   }
 
   String solution() {
@@ -123,27 +127,33 @@ enum Actions {
 }
 
 class Problem {
-  String initialState;
-  String goal;
+  int[][] initialState;
+  int[][] goal;
 
-  Problem(String initialState, String goal) {
+  Problem(int[][] initialState, int[][] goal) {
     this.initialState = initialState;
     this.goal = goal;
   }
 
-  boolean goalTest(String state) {
-    return false;
+  boolean goalTest(int[][] state) {
+    return this.goal.equals(state);
   }
 
-  int pathCost() {
-    return -1;
+
+  int pathCost(int cost, int[][] state, String action, int[][] nextState) {
+//          """Return the cost of a solution path that arrives at state2 from
+//        state1 via action, assuming cost c to get up to state1. If the problem
+//        is such that the path doesn't matter, this function will only look at
+//        state2. If the path does matter, it will consider c and maybe state1
+//        and action. The default method costs 1 for every step in the path."""
+    return ++cost;
   }
   // returns state
-  String result(String state, String action) {
+  int[][] result(int[][] state, String action) {
     return null;
   }
   // returns available actions given state
-  List<String> actions(String state) {
+  List<String> actions(int[][] state) {
     return null;
   }
 }
