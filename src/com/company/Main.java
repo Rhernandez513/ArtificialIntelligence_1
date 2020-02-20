@@ -1,7 +1,9 @@
 package com.company;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
@@ -20,7 +22,12 @@ public class Main {
     long startTime = System.nanoTime();
 
     // execute BFS
-//    String solution = breadthFirstSearch(new Problem(initialState, goalState));
+    List<Actions> solutionSequence = breadthFirstSearch(new Problem(initialState, goalState));
+
+    // convert to human-readable
+    StringBuilder solutionBuilder = new StringBuilder();
+    for(Actions action : solutionSequence) { solutionBuilder.append(action); }
+    final String solution = solutionBuilder.toString();
 
     // show time
     long endTime = System.nanoTime();
@@ -29,9 +36,12 @@ public class Main {
     // calculate memory used
     int megabyte = 1024 * 1024;
     Runtime runtime = Runtime.getRuntime();
-    System.out.print( "Memory used by JVM at Runtime: " + getMemoryUsed());
-    System.out.println("MB");
-    System.out.println("Java uses a whole LOT of memory...");
+    long memory = getMemoryUsed();
+
+    // Print result
+    System.out.print("Moves: " + solution);
+    System.out.print( "Memory used by JVM at Runtime: " + getMemoryUsed() + "MB");
+    System.out.println("\n Java uses a whole LOT of memory...");
   }
 
   static int[][] getStateFromSting(String input) {
@@ -52,11 +62,9 @@ public class Main {
   }
 
   // "done"
-  static String breadthFirstSearch(Problem problem) {
+  static List<Actions> breadthFirstSearch(Problem problem) {
     Node node = new Node(problem.initialState, 0);
-    if (problem.goalTest(node.state)) {
-      return node.solution();
-    }
+    if (problem.goalTest(node.state)) { return node.solution(); }
 
     Queue<Node> frontier = new ArrayDeque<>();
     frontier.add(node);
@@ -65,9 +73,9 @@ public class Main {
     while (!frontier.isEmpty()) {
       node = frontier.poll();
       explored.add(node.state);
-      for (String action : problem.actions(node.state)) {
+      for (Actions action : problem.actions(node.state)) {
         Node child = node.childNode(problem, action);
-        if (explored.contains(child.state) && frontier.contains(child.state)) {
+        if (!(explored.contains(child.state) || frontier.contains(child))) {
           if (problem.goalTest(child.state)) {
             return child.solution();
           }
@@ -80,56 +88,65 @@ public class Main {
 }
 
 class Node {
+  int manhattanDistance;
   int[][] state;
   int pathCost;
   Node parent;
-  String action;
+  Actions action;
 
   Node(int[][] state, int pathCost) {
     this.state = state;
     this.pathCost = pathCost;
   }
 
-  Node(int[][] state, Node parent, String action, int pathCost) {
+  Node(int[][] state, Node parent, Actions action, int pathCost) {
     this.state = state;
     this.parent = parent;
     this.action = action;
     this.pathCost = pathCost;
   }
 
-  String expand() {
-    return null;
-  }
+//  String expand() {
+//    return null;
+//  }
 
   // "done"
-  Node childNode(Problem problem, String action) {
+  Node childNode(Problem problem, Actions action) {
     int[][] nextState = problem.result(this.state, action);
     Node nextNode = new Node(nextState, this, action, problem.pathCost(1, this.state, action, nextState));
     return nextNode;
   }
 
-  String solution() {
-    return null;
+  List<Actions>solution() {
+    List<Actions> sequence = new ArrayList<>();
+    for(Node node : this.path()) {
+      sequence.add(node.action);
+    }
+    return sequence;
   }
 
-  String path() {
-    return null;
+  List<Node> path() {
+    Node node = this;
+    List<Node> path_back = new ArrayList<>();
+    while (node != null) {
+      path_back.add(node);
+      node = node.parent;
+    }
+    Collections.reverse(path_back);
+    return path_back;
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (((Node) obj).state == this.state) {
-      return true;
-    }
-    return false;
+    return (((Node) obj).state == this.state) ? true : false;
   }
 }
 
 enum Actions {
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT
+    U, //  UP,
+    D, //  DOWN,
+    L, //  LEFT,
+    R  //  RIGHT
 }
 
 class Problem {
@@ -146,7 +163,7 @@ class Problem {
   }
 
 
-  int pathCost(int cost, int[][] state, String action, int[][] nextState) {
+  int pathCost(int cost, int[][] state, Actions action, int[][] nextState) {
 //          """Return the cost of a solution path that arrives at state2 from
 //        state1 via action, assuming cost c to get up to state1. If the problem
 //        is such that the path doesn't matter, this function will only look at
@@ -155,11 +172,11 @@ class Problem {
     return ++cost;
   }
   // returns state
-  int[][] result(int[][] state, String action) {
+  int[][] result(int[][] state, Actions action) {
     return null;
   }
   // returns available actions given state
-  List<String> actions(int[][] state) {
+  List<Actions> actions(int[][] state) {
     return null;
   }
 }
