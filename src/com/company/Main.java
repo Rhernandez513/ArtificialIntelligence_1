@@ -1,16 +1,6 @@
 package com.company;
 
-import javax.swing.*;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
 
@@ -76,7 +66,9 @@ public class Main {
             return node.solution();
         }
 
-        Queue<Node> frontier = new ArrayDeque<>();
+//        Queue<Node> frontier = new ArrayDeque<>();
+        Queue<Node> frontier = new PriorityQueue<>(nodeComparator);
+
         frontier.add(node);
         Set<int[][]> explored = new HashSet<>();
 
@@ -96,10 +88,26 @@ public class Main {
         }
         return null;
     }
+
+    // Comparator anonymous class implementation
+    static Comparator<Node> nodeComparator = (n1, n2) -> (int) (n1.misplacedSquares - n2.misplacedSquares);
+
+    static int calculateMisplacedSquares(int[][] state, int[][] goalState) {
+        int count = 0;
+        for(int i = 0; i < 4; ++i){
+            for(int j = 0; j < 4; ++j) {
+                if(state[i][j] != goalState[i][j]) {
+                    ++count;
+                }
+            }
+        }
+        return count;
+    }
 }
 
 class Node {
     int manhattanDistance;
+    int misplacedSquares;
     int[][] state;
     int pathCost;
     Node parent;
@@ -108,24 +116,20 @@ class Node {
     Node(int[][] state, int pathCost) {
         this.state = state;
         this.pathCost = pathCost;
+        this.misplacedSquares = Integer.MAX_VALUE;
     }
 
-    Node(int[][] state, Node parent, Actions action, int pathCost) {
+    Node(int[][] state, Node parent, Actions action, int pathCost, int misplacedSquares) {
         this.state = state;
         this.parent = parent;
         this.action = action;
         this.pathCost = pathCost;
+        this.misplacedSquares = misplacedSquares;
     }
 
-//  String expand() {
-//    return null;
-//  }
-
-    // "done"
     Node childNode(Problem problem, Actions action) {
         int[][] nextState = problem.result(this.state, action);
-        Node nextNode = new Node(nextState, this, action, problem.pathCost(1, this.state, action, nextState));
-        return nextNode;
+        return new Node(problem.result(this.state, action), this, action, problem.pathCost(1), Main.calculateMisplacedSquares(nextState, problem.goal));
     }
 
     List<Actions> solution() {
@@ -174,8 +178,7 @@ class Problem {
         return Arrays.deepEquals(this.goal, state);
     }
 
-
-    int pathCost(int cost, int[][] state, Actions action, int[][] nextState) {
+    int pathCost(int cost) {
         return ++cost;
     }
 
