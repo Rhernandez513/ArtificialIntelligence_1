@@ -1,5 +1,6 @@
 package com.company;
 
+import javax.swing.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,27 +25,25 @@ public class Main {
     long startTime = System.nanoTime();
 
     // execute BFS
-    List<Actions> solutionSequence = breadthFirstSearch(new Problem(initialState, goalState));
+    Problem problem = new Problem(initialState, goalState);
+    List<Actions> solutionSequence = breadthFirstSearch(problem);
 
     // convert to human-readable
     StringBuilder solutionBuilder = new StringBuilder();
     if (solutionSequence == null) { System.out.println("Failure detected"); System.exit(1);}
     for(Actions action : solutionSequence) { solutionBuilder.append(action); }
-    final String solution = solutionBuilder.toString();
+    final String solution = solutionBuilder.toString().substring(4);
 
-    // show time
+    // time
     long endTime = System.nanoTime();
-    System.out.println(String.format("Time elapsed: %dns", endTime - startTime));
-
-    // calculate memory used
-    int megabyte = 1024 * 1024;
-    Runtime runtime = Runtime.getRuntime();
-    long memory = getMemoryUsed();
+    long timeDelta = endTime - startTime;
 
     // Print result
-    System.out.print("Moves: " + solution);
-    System.out.print( "Memory used by JVM at Runtime: " + getMemoryUsed() + "MB");
-    System.out.println("\n Java uses a whole LOT of memory...");
+    System.out.println("Moves: " + solution);
+    System.out.println("Number of Nodes expanded: " + problem.expandedCount);
+    System.out.println(String.format("Time elapsed: %d ns", timeDelta));
+    System.out.println( "Memory used by JVM at Runtime: " + getMemoryUsed() + " MB");
+    System.out.println("\nJava uses a whole LOT of memory...");
   }
 
   static int[][] getStateFromSting(String input) {
@@ -58,10 +57,11 @@ public class Main {
     return state;
   }
 
+  // calculate memory used
   static long getMemoryUsed() {
     int megabyte = 1024 * 1024;
     Runtime runtime = Runtime.getRuntime();
-    return (runtime.totalMemory() - runtime.freeMemory() / megabyte);
+    return ((runtime.totalMemory() - runtime.freeMemory()) / megabyte);
   }
 
   // "done"
@@ -78,6 +78,7 @@ public class Main {
       explored.add(node.state);
       for (Actions action : problem.actions(node.state)) {
         Node child = node.childNode(problem, action);
+        ++problem.expandedCount;
         if (!(explored.contains(child.state) || frontier.contains(child))) {
           if (problem.goalTest(child.state)) {
             return child.solution();
@@ -141,7 +142,7 @@ class Node {
 
   @Override
   public boolean equals(Object obj) {
-    return (((Node) obj).state == this.state) ? true : false;
+    return Arrays.deepEquals(((Node) obj).state, this.state);
   }
 }
 
@@ -155,6 +156,7 @@ enum Actions {
 class Problem {
   int[][] initialState;
   int[][] goal;
+  int expandedCount;
 
   Problem(int[][] initialState, int[][] goal) {
     this.initialState = initialState;
@@ -177,44 +179,42 @@ class Problem {
     // TODO convert State to an object that internally tracks where the blank is
     Map.Entry<Integer, Integer> xy_tuple = identifyBlank(state);
 
+    int[][] localState = new int [4][4];
+
+    for(int i = 0; i < 4; ++i) {
+      for(int j = 0; j < 4; ++j) {
+          localState[i][j] = state[i][j];
+      }
+    }
+
     int x = xy_tuple.getKey();
     int y = xy_tuple.getValue();
 
     switch (action){
       case U:
-// swap zero with one above it
-        state[x][y] = state[x+1][y];
-        state[x+1][y] = 0;
+        localState[x][y] = localState[x-1][y];
+        localState[x-1][y] = 0;
         break;
       case D:
-// swap zero with one below it
-        state[x][y] = state[x-1][y];
-        state[x-1][y] = 0;
+        localState[x][y] = localState[x+1][y];
+        localState[x+1][y] = 0;
         break;
       case R:
-// swap zero with one to the right
-        state[x][y] = state[x][y+1];
-        state[x][y+1] = 0;
+        localState[x][y] = localState[x][y+1];
+        localState[x][y+1] = 0;
         break;
       case L:
-// swap zero with one to the left
-        state[x][y] = state[x][y-1];
-        state[x][y-1] = 0;
+        localState[x][y] = localState[x][y-1];
+        localState[x][y-1] = 0;
         break;
       default:
     }
-    return state;
+    return localState;
   }
 
   // returns available actions given state
   List<Actions> actions(int[][] state) {
-    Map.Entry<Integer, Integer> blankTuple = null;
-    try {
-      blankTuple = identifyBlank(state);
-    } catch (Exception e) {
-      System.out.println("YOUR INPUT is missing a 0");
-      System.exit(1);
-    }
+    Map.Entry<Integer, Integer> blankTuple = identifyBlank(state);
 
     List<Actions> actions = new ArrayList<>(Arrays.asList(Actions.U, Actions.D, Actions.L, Actions.R));
 
@@ -223,23 +223,19 @@ class Problem {
 
     switch (x) {
       case 0:
-        // Disallow left
-        actions.remove(Actions.L);
+        actions.remove(Actions.U);
         break;
       case 3:
-        // Disallow right
-        actions.remove(Actions.R);
+        actions.remove(Actions.D);
         break;
       default:
     }
     switch (y) {
       case 0:
-        // Disallow up
-        actions.remove(Actions.U);
+        actions.remove(Actions.L);
         break;
       case 3:
-        // Disallow down
-        actions.remove(Actions.D);
+        actions.remove(Actions.R);
         break;
       default:
     }
@@ -250,6 +246,7 @@ class Problem {
   private Map.Entry<Integer, Integer> identifyBlank(int[][] state) {
     // I would use a Pair<Integer, Integer> to represent a tuple
     // but I can't guarantee if the grader is running OpenJDK or OracleJDK
+    // Map.Entry provides much the same interface
     Map<Integer, Integer> blank = new HashMap<>();
 
     for(int x = 0; x < 4; ++x) {
