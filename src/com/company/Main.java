@@ -1,6 +1,7 @@
 package com.company;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
@@ -10,9 +11,7 @@ public class Main {
 
   public static void main(String[] args) {
 
-    // TODO
-    // formulate state object from string input
-    String input = "";
+    String input = "1 0 2 4 5 7 3 8 9 6 11 12 13 10 14 15";
     String goalString = "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0 ";
     int[][] initialState = getStateFromSting(input);
     int[][] goalState = getStateFromSting(goalString);
@@ -21,7 +20,7 @@ public class Main {
     long startTime = System.nanoTime();
 
     // execute BFS
-    String solution = breadthFirstSearch(new Problem(initialState, goalState));
+//    String solution = breadthFirstSearch(new Problem(initialState, goalState));
 
     // show time
     long endTime = System.nanoTime();
@@ -36,7 +35,14 @@ public class Main {
   }
 
   static int[][] getStateFromSting(String input) {
-    return new int[][] { };
+    int[][] state = new int[4][4];
+    Queue<String> vals = new ArrayDeque<>(Arrays.asList(input.split(" ")));
+    for(int i = 0; i < 4; ++i) {
+      for(int j = 0; j < 4; ++j) {
+        state[i][j] = Integer.parseInt(vals.poll());
+      }
+    }
+    return state;
   }
 
   static long getMemoryUsed() {
@@ -61,7 +67,7 @@ public class Main {
       explored.add(node.state);
       for (String action : problem.actions(node.state)) {
         Node child = node.childNode(problem, action);
-        if (explored.contains(child.state) || frontier.contains(child.state)) {
+        if (explored.contains(child.state) && frontier.contains(child.state)) {
           if (problem.goalTest(child.state)) {
             return child.solution();
           }
