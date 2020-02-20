@@ -4,8 +4,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -164,19 +166,88 @@ class Problem {
 
 
   int pathCost(int cost, int[][] state, Actions action, int[][] nextState) {
-//          """Return the cost of a solution path that arrives at state2 from
-//        state1 via action, assuming cost c to get up to state1. If the problem
-//        is such that the path doesn't matter, this function will only look at
-//        state2. If the path does matter, it will consider c and maybe state1
-//        and action. The default method costs 1 for every step in the path."""
     return ++cost;
   }
   // returns state
   int[][] result(int[][] state, Actions action) {
-    return null;
+
+    // TODO convert State to an object that internally tracks where the blank is
+    Map.Entry<Integer, Integer> xy_tuple = identifyBlank(state);
+
+    int x = xy_tuple.getKey();
+    int y = xy_tuple.getKey();
+
+    switch (action){
+      case U:
+// swap zero with one above it
+        state[x][y] = state[x-1][y];
+        state[x-1][y] = 0;
+      case D:
+// swap zero with one below it
+        state[x][y] = state[x + 1][y];
+        state[x+1][y] = 0;
+      case R:
+// swap zero with one to the right
+        state[x][y] = state[x][y+1];
+        state[x][y+1] = 0;
+      case L:
+// swap zero with one to the left
+        state[x][y] = state[x][y-1];
+        state[x][y-1] = 0;
+    }
+    return state;
   }
+
   // returns available actions given state
   List<Actions> actions(int[][] state) {
+    Map.Entry<Integer, Integer> blankTuple = null;
+    try {
+      blankTuple = identifyBlank(state);
+    } catch (Exception e) {
+      System.out.println("YOUR INPUT is missing a 0");
+      System.exit(1);
+    }
+
+    List<Actions> actions = new ArrayList<>(Arrays.asList(Actions.U, Actions.D, Actions.L, Actions.R));
+
+    int x = blankTuple.getKey();
+    int y = blankTuple.getValue();
+
+    switch (x) {
+      case 0:
+        // Disallow left
+        actions.remove(Actions.L);
+      case 3:
+        // Disallow right
+        actions.remove(Actions.R);
+      default:
+    }
+    switch (y) {
+      case 0:
+        // Disallow up
+        actions.remove(Actions.U);
+      case 3:
+        // Disallow down
+        actions.remove(Actions.D);
+      default:
+    }
+
+    return actions;
+  }
+
+  private Map.Entry<Integer, Integer> identifyBlank(int[][] state) {
+    // I would use a Pair<Integer, Integer> to represent a tuple
+    // but I can't guarantee if the grader is running OpenJDK or OracleJDK
+    Map<Integer, Integer> blank = new HashMap<>();
+
+    for(int i = 0; i < 4; ++i) {
+      for(int j = 0; j < 4; ++j) {
+        if(state[i][j] == 0) {
+          blank.put(i, j);
+          return blank.entrySet().iterator().next();
+        }
+      }
+    }
     return null;
   }
 }
