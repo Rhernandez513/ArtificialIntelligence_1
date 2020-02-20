@@ -162,14 +162,16 @@ class Problem {
   }
 
   boolean goalTest(int[][] state) {
-    return this.goal.equals(state);
+    return Arrays.deepEquals(this.goal, state);
   }
 
 
   int pathCost(int cost, int[][] state, Actions action, int[][] nextState) {
     return ++cost;
   }
+
   // returns state
+  // should produce a new state object, not modify the param
   int[][] result(int[][] state, Actions action) {
 
     // TODO convert State to an object that internally tracks where the blank is
