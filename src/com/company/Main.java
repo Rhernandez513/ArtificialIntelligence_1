@@ -28,6 +28,7 @@ public class Main {
 
     // convert to human-readable
     StringBuilder solutionBuilder = new StringBuilder();
+    if (solutionSequence == null) { System.out.println("Failure detected"); System.exit(1);}
     for(Actions action : solutionSequence) { solutionBuilder.append(action); }
     final String solution = solutionBuilder.toString();
 
@@ -175,25 +176,30 @@ class Problem {
     Map.Entry<Integer, Integer> xy_tuple = identifyBlank(state);
 
     int x = xy_tuple.getKey();
-    int y = xy_tuple.getKey();
+    int y = xy_tuple.getValue();
 
     switch (action){
       case U:
 // swap zero with one above it
-        state[x][y] = state[x-1][y];
-        state[x-1][y] = 0;
+        state[x][y] = state[x+1][y];
+        state[x+1][y] = 0;
+        break;
       case D:
 // swap zero with one below it
-        state[x][y] = state[x + 1][y];
-        state[x+1][y] = 0;
+        state[x][y] = state[x-1][y];
+        state[x-1][y] = 0;
+        break;
       case R:
 // swap zero with one to the right
         state[x][y] = state[x][y+1];
         state[x][y+1] = 0;
+        break;
       case L:
 // swap zero with one to the left
         state[x][y] = state[x][y-1];
         state[x][y-1] = 0;
+        break;
+      default:
     }
     return state;
   }
@@ -217,18 +223,22 @@ class Problem {
       case 0:
         // Disallow left
         actions.remove(Actions.L);
+        break;
       case 3:
         // Disallow right
         actions.remove(Actions.R);
+        break;
       default:
     }
     switch (y) {
       case 0:
         // Disallow up
         actions.remove(Actions.U);
+        break;
       case 3:
         // Disallow down
         actions.remove(Actions.D);
+        break;
       default:
     }
 
@@ -240,10 +250,10 @@ class Problem {
     // but I can't guarantee if the grader is running OpenJDK or OracleJDK
     Map<Integer, Integer> blank = new HashMap<>();
 
-    for(int i = 0; i < 4; ++i) {
-      for(int j = 0; j < 4; ++j) {
-        if(state[i][j] == 0) {
-          blank.put(i, j);
+    for(int x = 0; x < 4; ++x) {
+      for(int y = 0; y < 4; ++y) {
+        if(state[x][y] == 0) {
+          blank.put(x, y);
           return blank.entrySet().iterator().next();
         }
       }
