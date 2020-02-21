@@ -16,7 +16,10 @@ public class Main {
         String goalString = "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0 ";
         int[][] initialState = getStateFromSting(input);
         int[][] goalState = getStateFromSting(goalString);
-        int man = calculateManhattanDistance(initialState);
+
+        // This calculation works, but I couldn't get the heuristic to work in the search before I ran out of time
+//        int man = calculateManhattanDistance(initialState);
+
         // time
         long startTime = System.nanoTime();
 
@@ -109,8 +112,10 @@ public class Main {
         return coordinatesOfGoals;
     }
 
+    // TODO replace simple misplacedSquares heuristic w/ Manhattan distance heuristic
     static int calculateManhattanDistance(int[][] state) {
         // For speed of calculation, since we know the goal state, we will use a lookup table
+        // TODO put this in the Problem object so it's only calc'd once
         Map<Integer, Map.Entry<Integer, Integer>> goalXYs = getGoalCoordinateMap();
 
         int distance = 0;
@@ -163,7 +168,7 @@ class Node {
 
     Node childNode(Problem problem, Actions action) {
         int[][] nextState = problem.result(this.state, action);
-        return new Node(problem.result(this.state, action), this, action, problem.pathCost(1), Main.calculateMisplacedSquares(nextState, problem.goal));
+        return new Node(problem.result(this.state, action), this, action, problem.pathCost(this.pathCost), Main.calculateMisplacedSquares(nextState, problem.goal));
     }
 
     List<Actions> solution() {
@@ -191,12 +196,7 @@ class Node {
     }
 }
 
-enum Actions {
-    U, //  UP,
-    D, //  DOWN,
-    L, //  LEFT,
-    R  //  RIGHT
-}
+enum Actions { U, D, L, R }
 
 class Problem {
     int[][] initialState;
@@ -216,8 +216,6 @@ class Problem {
         return ++cost;
     }
 
-    // returns state
-    // should produce a new state object, not modify the param
     int[][] result(int[][] state, Actions action) {
 
         // TODO convert State to an object that internally tracks where the blank is
