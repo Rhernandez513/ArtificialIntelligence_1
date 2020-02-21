@@ -6,11 +6,17 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String input = "1 0 2 4 5 7 3 8 9 6 11 12 13 10 14 15";
+        String input = null;
+        if(args.length > 0) {
+            input = args[0];
+        } else {
+            input = "1 0 2 4 5 7 3 8 9 6 11 12 13 10 14 15";
+        }
+
         String goalString = "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0 ";
         int[][] initialState = getStateFromSting(input);
         int[][] goalState = getStateFromSting(goalString);
-
+        int man = calculateManhattanDistance(initialState);
         // time
         long startTime = System.nanoTime();
 
@@ -18,15 +24,11 @@ public class Main {
         Problem problem = new Problem(initialState, goalState);
         List<Actions> solutionSequence = breadthFirstSearch(problem);
 
+        if (solutionSequence == null) { System.out.println("Failure in search detected"); System.exit(1); }
+
         // convert to human-readable
         StringBuilder solutionBuilder = new StringBuilder();
-        if (solutionSequence == null) {
-            System.out.println("Failure detected");
-            System.exit(1);
-        }
-        for (Actions action : solutionSequence) {
-            solutionBuilder.append(action);
-        }
+        solutionSequence.forEach(actions -> solutionBuilder.append(actions));
         final String solution = solutionBuilder.toString().substring(4);
 
         // time
@@ -52,21 +54,18 @@ public class Main {
         return state;
     }
 
-    // calculate memory used
     static long getMemoryUsed() {
         int megabyte = 1024 * 1024;
         Runtime runtime = Runtime.getRuntime();
         return ((runtime.totalMemory() - runtime.freeMemory()) / megabyte);
     }
 
-    // "done"
     static List<Actions> breadthFirstSearch(Problem problem) {
         Node node = new Node(problem.initialState, 0);
         if (problem.goalTest(node.state)) {
             return node.solution();
         }
 
-//        Queue<Node> frontier = new ArrayDeque<>();
         Queue<Node> frontier = new PriorityQueue<>(nodeComparator);
 
         frontier.add(node);
@@ -91,6 +90,41 @@ public class Main {
 
     // Comparator anonymous class implementation
     static Comparator<Node> nodeComparator = (n1, n2) -> (int) (n1.misplacedSquares - n2.misplacedSquares);
+
+    static Map<Integer, Map.Entry<Integer, Integer>> getGoalCoordinateMap(){
+        Map<Integer, Map.Entry<Integer, Integer>> coordinatesOfGoals = new HashMap<>();
+        Map<Integer, Integer> currentCoordinate;
+        int k = 1;
+        for (int i = 0; i < 4; ++i) {
+            for(int j = 0; j < 4; ++j) {
+                currentCoordinate = new HashMap<>();
+                currentCoordinate.put(i, j);
+                if(k == 16) {
+                    coordinatesOfGoals.put(0, currentCoordinate.entrySet().iterator().next());
+                } else {
+                    coordinatesOfGoals.put(k++, currentCoordinate.entrySet().iterator().next());
+                }
+            }
+        }
+        return coordinatesOfGoals;
+    }
+
+    static int calculateManhattanDistance(int[][] state) {
+        // For speed of calculation, since we know the goal state, we will use a lookup table
+        Map<Integer, Map.Entry<Integer, Integer>> goalXYs = getGoalCoordinateMap();
+
+        int distance = 0;
+        for(int i = 0; i < 4; ++i){
+            for(int j = 0; j < 4; ++j) {
+                int value = state[i][j];
+                Map.Entry<Integer, Integer> goalXYTuple = goalXYs.get(value);
+                //        a, b = current location of [i][j]
+                //        c, d = location of where [i][j] SHOULD be
+                distance += Math.abs(i - goalXYTuple.getKey()) + Math.abs(j - goalXYTuple.getValue());
+            }
+        }
+        return distance;
+    }
 
     static int calculateMisplacedSquares(int[][] state, int[][] goalState) {
         int count = 0;
