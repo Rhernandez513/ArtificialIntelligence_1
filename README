@@ -7,15 +7,19 @@ Basic Idea is to solve the 15 puzzle by implementing a breadth first search
 
 Uses Java 8
 
-should be able to compile and run with
+Step 1. rename Main.java.txt to Main.java
+
+Step 2. should be able to compile and run with
  ```
- javac Main.class
+ javac Main.java
  java Main
  ```
 
- optionally run with a user input state string, ex:
+Step 3.
 
-Warning: Since manhattan distance wasn't able to be implemented fully, I noticed adding too much entropy into the input string
-makes the program run MUCH longer consider just one or two swaps to save yourself some time ex:
+optionally run with a user input state string, ex:
+
+(Warning: Since manhattan distance wasn't able to be implemented fully, I noticed adding too much entropy into the input string
+makes the program run MUCH longer consider just one or two swaps to save yourself some time)
 
  ```java Main "0 1 2 4 5 7 3 8 9 6 11 12 13 10 14 15"```
