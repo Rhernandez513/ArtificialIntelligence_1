@@ -1,3 +1,5 @@
+package com.company;
+
 import java.util.*;
 
 public class Main {
@@ -62,7 +64,7 @@ public class Main {
     }
 
     static List<Actions> breadthFirstSearch(Problem problem) {
-        Node node = new Node(problem.initialState, 0);
+        Node node = new Node(problem.initialState);
         if (problem.goalTest(node.state)) {
             return node.solution();
         }
@@ -90,7 +92,7 @@ public class Main {
     }
 
     // Comparator anonymous class implementation
-    static Comparator<Node> nodeComparator = (n1, n2) -> (int) (n1.misplacedSquares - n2.misplacedSquares);
+    static Comparator<Node> nodeComparator = (n1, n2) -> (int) (n1.heuristic - n2.heuristic);
 
     static Map<Integer, Map.Entry<Integer, Integer>> getGoalCoordinateMap(){
         Map<Integer, Map.Entry<Integer, Integer>> coordinatesOfGoals = new HashMap<>();
@@ -143,30 +145,29 @@ public class Main {
 }
 
 class Node {
-    int manhattanDistance;
-    int misplacedSquares;
+    int heuristic;
     int[][] state;
     int pathCost;
     Node parent;
     Actions action;
 
-    Node(int[][] state, int pathCost) {
+    Node(int[][] state) {
         this.state = state;
-        this.pathCost = pathCost;
-        this.misplacedSquares = Integer.MAX_VALUE;
+        this.pathCost = 0;
+        this.heuristic = Integer.MAX_VALUE;
     }
 
-    Node(int[][] state, Node parent, Actions action, int pathCost, int misplacedSquares) {
+    Node(int[][] state, int pathCost, Node parent, Actions action, int heuristic) {
         this.state = state;
+        this.pathCost = pathCost;
         this.parent = parent;
         this.action = action;
-        this.pathCost = pathCost;
-        this.misplacedSquares = misplacedSquares;
+        this.heuristic = heuristic;
     }
 
     Node childNode(Problem problem, Actions action) {
         int[][] nextState = problem.result(this.state, action);
-        return new Node(problem.result(this.state, action), this, action, problem.pathCost(this.pathCost), Main.calculateMisplacedSquares(nextState, problem.goal));
+        return new Node(nextState, problem.pathCost(this.pathCost), this, action, Main.calculateMisplacedSquares(nextState, problem.goal));
     }
 
     List<Actions> solution() {
