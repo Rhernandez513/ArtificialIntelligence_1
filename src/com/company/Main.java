@@ -25,7 +25,8 @@ public class Main {
 
         // execute BFS
         Problem problem = new Problem(initialState, goalState);
-        List<Actions> solutionSequence = breadthFirstSearch(problem);
+//        List<Actions> solutionSequence = breadthFirstSearch(problem);
+        List<Actions> solutionSequence = iterativeDeepeningDepthFirstSearch(problem);
 
         if (solutionSequence == null) { System.out.println("Failure in search detected"); System.exit(1); }
 
@@ -63,7 +64,45 @@ public class Main {
         return ((runtime.totalMemory() - runtime.freeMemory()) / megabyte);
     }
 
+    // based on Figure 3.17 in AIMA Russel/Norvig 3rd ed
+    // returns a solution or failure/cutoff
+    static Node recursiveDepthLimitedSearch(Node node, Problem problem, int limit) {
+        if (problem.goalTest(node.state)) { return node; }
+        else if (limit == 0) { return null; } // return "cutoff"
+        else {
+            boolean cutoffOccurred = false;
+            for(Actions action : problem.actions(node.state)) {
+                Node child = node.childNode(problem, action);
+                Node result = recursiveDepthLimitedSearch(child, problem, --limit);
+                // if result = cutoff
+                if (result == null) { cutoffOccurred = true; }
+                // if result is not a failure
+                else if (result.state != null) { return result; }
+            }
+            // return "cutoff" else "failure"
+            return (cutoffOccurred) ? null : new Node(null);
+        }
+    }
+
+    // based on Figure 3.17 in AIMA Russel/Norvig 3rd ed
+    // returns a solution or failure/cutoff
+    static Node depthLimitedSearch(Problem problem, int limit) {
+      return recursiveDepthLimitedSearch(new Node(problem.initialState), problem, limit);
+    }
+
+    // based on Figure 3.18 in AIMA Russel/Norvig 3rd ed
+    // returns a solution or failure
+    // cutoff is represented by a null
+    //  Failure is represented by a Node with a null state
     static List<Actions> iterativeDeepeningDepthFirstSearch(Problem problem) {
+        Node result = null;
+        int infinity = Integer.MAX_VALUE;
+        for(int depth = 1; depth < infinity; ++depth) {
+          result = depthLimitedSearch(problem, depth);
+          if(result == null) { return null; }
+          if(result.state == null) { return null; }
+          if (problem.goalTest(result.state)) { return result.solution(); }
+        }
         return null;
     }
 
