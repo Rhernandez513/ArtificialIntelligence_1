@@ -130,7 +130,7 @@ class Node:
         return False
 
     def __hash__(self):
-        return hash(self.board.state)
+        return hash(self.board)
 
     def __lt__(self, other):
         return self.board.state < other.board.state
@@ -196,7 +196,7 @@ class problem:
     def identify_blank(self, state):
         for x in range(4):
             for y in range(4):
-                if state[x][y] == 0:
+                if state[x][y] == '0':
                     return x, y
         return None
 
