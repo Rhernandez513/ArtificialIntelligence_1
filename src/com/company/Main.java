@@ -63,6 +63,10 @@ public class Main {
         return ((runtime.totalMemory() - runtime.freeMemory()) / megabyte);
     }
 
+    static List<Actions> iterativeDeepeningDepthFirstSearch(Problem problem) {
+        return null;
+    }
+
     static List<Actions> breadthFirstSearch(Problem problem) {
         Node node = new Node(problem.initialState);
         if (problem.goalTest(node.state)) {
@@ -94,42 +98,42 @@ public class Main {
     // Comparator anonymous class implementation
     static Comparator<Node> nodeComparator = (n1, n2) -> (int) (n1.heuristic - n2.heuristic);
 
-    static Map<Integer, Map.Entry<Integer, Integer>> getGoalCoordinateMap(){
-        Map<Integer, Map.Entry<Integer, Integer>> coordinatesOfGoals = new HashMap<>();
-        Map<Integer, Integer> currentCoordinate;
-        int k = 1;
-        for (int i = 0; i < 4; ++i) {
-            for(int j = 0; j < 4; ++j) {
-                currentCoordinate = new HashMap<>();
-                currentCoordinate.put(i, j);
-                if(k == 16) {
-                    coordinatesOfGoals.put(0, currentCoordinate.entrySet().iterator().next());
-                } else {
-                    coordinatesOfGoals.put(k++, currentCoordinate.entrySet().iterator().next());
-                }
-            }
-        }
-        return coordinatesOfGoals;
-    }
-
-    // TODO replace simple misplacedSquares heuristic w/ Manhattan distance heuristic
-    static int calculateManhattanDistance(int[][] state) {
-        // For speed of calculation, since we know the goal state, we will use a lookup table
-        // TODO put this in the Problem object so it's only calc'd once
-        Map<Integer, Map.Entry<Integer, Integer>> goalXYs = getGoalCoordinateMap();
-
-        int distance = 0;
-        for(int i = 0; i < 4; ++i){
-            for(int j = 0; j < 4; ++j) {
-                int value = state[i][j];
-                Map.Entry<Integer, Integer> goalXYTuple = goalXYs.get(value);
-                //        a, b = current location of [i][j]
-                //        c, d = location of where [i][j] SHOULD be
-                distance += Math.abs(i - goalXYTuple.getKey()) + Math.abs(j - goalXYTuple.getValue());
-            }
-        }
-        return distance;
-    }
+//    static Map<Integer, Map.Entry<Integer, Integer>> getGoalCoordinateMap(){
+//        Map<Integer, Map.Entry<Integer, Integer>> coordinatesOfGoals = new HashMap<>();
+//        Map<Integer, Integer> currentCoordinate;
+//        int k = 1;
+//        for (int i = 0; i < 4; ++i) {
+//            for(int j = 0; j < 4; ++j) {
+//                currentCoordinate = new HashMap<>();
+//                currentCoordinate.put(i, j);
+//                if(k == 16) {
+//                    coordinatesOfGoals.put(0, currentCoordinate.entrySet().iterator().next());
+//                } else {
+//                    coordinatesOfGoals.put(k++, currentCoordinate.entrySet().iterator().next());
+//                }
+//            }
+//        }
+//        return coordinatesOfGoals;
+//    }
+//
+//    // TODO replace simple misplacedSquares heuristic w/ Manhattan distance heuristic
+//    static int calculateManhattanDistance(int[][] state) {
+//        // For speed of calculation, since we know the goal state, we will use a lookup table
+//        // TODO put this in the Problem object so it's only calc'd once
+//        Map<Integer, Map.Entry<Integer, Integer>> goalXYs = getGoalCoordinateMap();
+//
+//        int distance = 0;
+//        for(int i = 0; i < 4; ++i){
+//            for(int j = 0; j < 4; ++j) {
+//                int value = state[i][j];
+//                Map.Entry<Integer, Integer> goalXYTuple = goalXYs.get(value);
+//                //        a, b = current location of [i][j]
+//                //        c, d = location of where [i][j] SHOULD be
+//                distance += Math.abs(i - goalXYTuple.getKey()) + Math.abs(j - goalXYTuple.getValue());
+//            }
+//        }
+//        return distance;
+//    }
 
     static int calculateMisplacedSquares(int[][] state, int[][] goalState) {
         int count = 0;
