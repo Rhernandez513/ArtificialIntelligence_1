@@ -68,7 +68,7 @@ public class Main {
     // returns a solution or failure/cutoff
     static Node recursiveDepthLimitedSearch(Node node, Problem problem, int limit) {
         if (problem.goalTest(node.state)) { return node; }
-        else if (limit == 0) { return null; } // return "cutoff"
+        else if (limit <= 0) { return null; } // return "cutoff"
         else {
             boolean cutoffOccurred = false;
             for(Actions action : problem.actions(node.state)) {
@@ -99,7 +99,7 @@ public class Main {
         int infinity = Integer.MAX_VALUE;
         for(int depth = 1; depth < infinity; ++depth) {
           result = depthLimitedSearch(problem, depth);
-          if(result == null) { return null; }
+          if(result == null) { continue; }
           if(result.state == null) { return null; }
           if (problem.goalTest(result.state)) { return result.solution(); }
         }
