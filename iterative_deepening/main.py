@@ -4,6 +4,7 @@ import sys
 
 from collections import deque
 from enum import Enum
+from queue import PriorityQueue
 
 
 def calc_heuristic(state, goal):
@@ -64,22 +65,25 @@ def main():
 
 def bfs(problem):
     node = Node(Board(problem.initial_state))
-    if problem.goal_test(node.board.state):
-        return node
+    if problem.goal_test(node.board):
+        return node.solution()
 
-    unexplored = deque([node])
+    # unexplored = deque([node])
+    unexplored = PriorityQueue()
+    unexplored.put((node.heuristic, node))
     explored = set()
 
-    while unexplored:
-        node = unexplored.popleft()
+    while not unexplored.empty():
+        node = unexplored.get()[1]
         explored.add(node)
         for action in problem.actions(node.board.state):
             child = node.child_node(problem, action)
-            problem.expanded_cound += 1
-            if child.state not in explored and child not in unexplored:
-                if problem.goal_test(child.state):
+            problem.expanded_count += 1
+            if child not in explored or child in unexplored:
+            # if child not in explored and child not in unexplored:
+                if problem.goal_test(child.board.state):
                     return child.solution()
-                unexplored.append(child)
+                unexplored.put((child.heuristic, child))
     return None
 
 class Board():
@@ -94,7 +98,7 @@ class Actions(Enum):
 
 
 class Node:
-    def __init__(self, board, path_cost=0, parent=None, action=None, heuristic=None):
+    def __init__(self, board, path_cost=0, parent=None, action=None, heuristic=sys.maxsize):
         self.board = board
         self.path_cost = path_cost
         self.parent = parent
@@ -102,8 +106,8 @@ class Node:
         self.heuristic = heuristic
 
     def child_node(self, problem, action):
-        next_state = Board(problem.result(self.state, action))
-        return Node(next_state, problem.path_cost(self.path_cost), self, action,
+        next_state = problem.result(self.board.state, action)
+        return Node(Board(next_state), problem.path_cost(self.path_cost), self, action,
                     calc_heuristic(next_state, problem.goal))
 
     def path(self):
@@ -124,7 +128,7 @@ class Node:
         if isinstance(other, Node):
             for x in range(4):
                 for y in range(4):
-                    if self.state[x][y] != other.state[x][y]:
+                    if self.board.state[x][y] != other.board.state[x][y]:
                         return False
             return True
         return False
@@ -177,16 +181,16 @@ class problem:
 
         if action == Actions.UP:
             local_state[x][y] = local_state[x - 1][y]
-            local_state[x - 1][y] = 0
+            local_state[x - 1][y] = '0'
         elif action == Actions.DOWN:
             local_state[x][y] = local_state[x + 1][y]
-            local_state[x + 1][y] = 0
+            local_state[x + 1][y] = '0'
         elif action == Actions.RIGHT:
             local_state[x][y] = local_state[x][y + 1];
-            local_state[x][y + 1] = 0;
+            local_state[x][y + 1] = '0'
         elif action == Actions.LEFT:
             local_state[x][y] = local_state[x][y - 1];
-            local_state[x][y - 1] = 0;
+            local_state[x][y - 1] = '0'
 
         return local_state
 
