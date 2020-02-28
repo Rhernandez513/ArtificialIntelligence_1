@@ -70,7 +70,6 @@ public class IDDFS {
   // based on Figure 3.17 in AIMA Russel/Norvig 3rd ed
   // returns a solution or failure/cutoff
   static Node depthLimitedSearch(Problem problem, int limit) {
-    //        return recursiveDepthLimitedSearch(new Node(problem.initialState), problem, limit);
     return recursiveDepthLimitedSearch(new Node(problem.initialState), problem, limit, null, null);
   }
 
@@ -80,6 +79,8 @@ public class IDDFS {
   // Failure is represented by a Node with a null state
   static List<Actions> iterativeDeepeningDepthFirstSearch(Problem problem) {
     Node result;
+    // I've ran a test case that ran the GC out of memory with only a depth limit of 100
+    // but if you want you can try  Integer.MAX_VALUE
     int infinity = 100;
     for (int depth = 1; depth < infinity; ++depth) {
       result = depthLimitedSearch(problem, depth);
