@@ -37,7 +37,7 @@ public class IDDFS {
             node = frontier.pop();
             if (problem.goalTest(node.state)) {
                 return node;
-            } else if (limit == 0) {
+            } else if (limit <= 0) {
                 return null; // cutoff
             } else {
                 cutoffOccured = false;
@@ -77,8 +77,8 @@ public class IDDFS {
         int infinity = 100;
         for(int depth = 1; depth < infinity; ++depth) {
             result = depthLimitedSearch(problem, depth);
-            if(result == null) { continue; }
-            if(result.state == null) { return null; }
+            if (result == null) { continue; }
+            if (result.state == null) { return null; }
             if (problem.goalTest(result.state)) { return result.solution(); }
         }
         return null;
