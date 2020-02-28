@@ -3,7 +3,8 @@ University of Illinois at Chicago
 Spring 2020
 Professor Piotr Gmytrasiewicz
 
-Basic Idea is to solve the 15 puzzle by implementing a breadth first search
+Basic Idea is to solve the 15 puzzle by implementing an iterative deepening depth first search
+second version used a dynamic programming technique called memoization to ignore repeated states
 
 Uses Java 8
 
@@ -22,4 +23,4 @@ optionally run with a user input state string, ex:
 (Warning: Since manhattan distance wasn't able to be implemented fully, I noticed adding too much entropy into the input string
 makes the program run MUCH longer consider just one or two swaps to save yourself some time)
 
- ```java IDDFS "0 1 2 4 5 7 3 8 9 6 11 12 13 10 14 15"```
+ ```java IDDFS "1 7 2 4 5 0 3 8 9 6 11 12 13 10 14 15"```

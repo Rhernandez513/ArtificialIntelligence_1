@@ -24,30 +24,48 @@ public class IDDFS {
     }
 
     // based on Figure 3.17 in AIMA Russel/Norvig 3rd ed
+    // combined with Figure 3.7 in AIMA Russel/Norvig 3rd ed  i.e. Graph version instead of tree version
     // returns a solution or failure/cutoff
-    static Node recursiveDepthLimitedSearch(Node node, Problem problem, int limit) {
-        if (problem.goalTest(node.state)) { return node; }
-        else if (limit <= 0) { return null; } // return "cutoff"
-        else {
-            boolean cutoffOccurred = false;
+    static Node recursiveDepthLimitedSearch(Node node, Problem problem, int limit, Stack<Node> frontier, HashSet<int[][]> explored) {
+        boolean cutoffOccured = false;
+        if (frontier == null) {
+          frontier = new Stack<>();
+          frontier.push(node);
+        }
+        if (explored == null) { explored = new HashSet<>(); }
+        while (!frontier.empty()) {
+            node = frontier.pop();
+            if (problem.goalTest(node.state)) {
+                return node;
+            } else if (limit == 0) {
+                return null; // cutoff
+            } else {
+                cutoffOccured = false;
+            }
+            explored.add(node.state);
             for(Actions action : problem.actions(node.state)) {
                 ++problem.expandedCount;
                 Node child = node.childNode(problem, action);
-                Node result = recursiveDepthLimitedSearch(child, problem, --limit);
-                // if result = cutoff
-                if (result == null) { cutoffOccurred = true; }
-                // if result is not a failure
-                else if (result.state != null) { return result; }
+                if(!explored.contains(child.state) && !frontier.contains(child)) {
+                    frontier.push(child);
+                }
+                Node result = recursiveDepthLimitedSearch(child, problem, --limit, frontier, explored);
+                if (result == null) { // result = cutoff
+                    cutoffOccured = true;
+                } else if (result.state != null) {
+                    return result;
+                }
             }
-            // return "cutoff" else "failure"
-            return (cutoffOccurred) ? null : new Node(null);
         }
+        return (cutoffOccured) ? null : new Node(null);
     }
+
 
     // based on Figure 3.17 in AIMA Russel/Norvig 3rd ed
     // returns a solution or failure/cutoff
     static Node depthLimitedSearch(Problem problem, int limit) {
-        return recursiveDepthLimitedSearch(new Node(problem.initialState), problem, limit);
+//        return recursiveDepthLimitedSearch(new Node(problem.initialState), problem, limit);
+        return recursiveDepthLimitedSearch(new Node(problem.initialState), problem, limit, null, null);
     }
 
     // based on Figure 3.18 in AIMA Russel/Norvig 3rd ed
@@ -55,8 +73,8 @@ public class IDDFS {
     // cutoff is represented by a null
     // Failure is represented by a Node with a null state
     static List<Actions> iterativeDeepeningDepthFirstSearch(Problem problem) {
-        Node result = null;
-        int infinity = Integer.MAX_VALUE;
+        Node result;
+        int infinity = 100;
         for(int depth = 1; depth < infinity; ++depth) {
             result = depthLimitedSearch(problem, depth);
             if(result == null) { continue; }
