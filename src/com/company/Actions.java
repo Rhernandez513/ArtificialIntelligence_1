@@ -1,3 +1,8 @@
 package com.company;
 
-enum Actions { U, D, L, R }
+enum Actions {
+  U,
+  D,
+  L,
+  R
+}
