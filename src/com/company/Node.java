@@ -3,6 +3,7 @@ package com.company;
 import java.util.*;
 
 class Node {
+  boolean isManhattanEnabled;
   int heuristic;
   int[][] state;
   int pathCost;
@@ -13,6 +14,14 @@ class Node {
     this.state = state;
     this.pathCost = 0;
     this.heuristic = Integer.MAX_VALUE;
+    this.isManhattanEnabled = false;
+  }
+
+  Node(int[][] state, boolean isManhattanEnabled) {
+    this.state = state;
+    this.pathCost = 0;
+    this.heuristic = Integer.MAX_VALUE;
+    this.isManhattanEnabled = isManhattanEnabled;
   }
 
   Node(int[][] state, int pathCost, Node parent, Actions action, int heuristic) {
@@ -21,17 +30,29 @@ class Node {
     this.parent = parent;
     this.action = action;
     this.heuristic = heuristic;
+    this.isManhattanEnabled = false;
+  }
+
+  Node(int[][] state, int pathCost, Node parent, Actions action, int heuristic, boolean isManhattanEnabled) {
+    this.state = state;
+    this.pathCost = pathCost;
+    this.parent = parent;
+    this.action = action;
+    this.heuristic = heuristic;
+    this.isManhattanEnabled = isManhattanEnabled;
   }
 
   Node childNode(Problem problem, Actions action) {
+    return this.childNode(problem, action, false);
+  }
+
+  Node childNode(Problem problem, Actions action, boolean isManhattanEnabled) {
     int[][] nextState = problem.result(this.state, action);
-    return new Node(
-        nextState,
-        problem.pathCost(this.pathCost),
-        this,
-        action,
-//        Util.calculateMisplacedSquares(nextState, problem.goal));
-        Util.calculateManhattanDistance(nextState));
+    int heuristic =
+        (isManhattanEnabled)
+            ? Util.calculateManhattanDistance(nextState)
+            : Util.calculateMisplacedSquares(nextState, problem.goal);
+    return new Node(nextState, problem.pathCost(this.pathCost), this, action, heuristic, this.isManhattanEnabled);
   }
 
   List<Actions> solution() {
@@ -54,7 +75,8 @@ class Node {
   }
 
   // Comparator anonymous class implementation
-  static Comparator<Node> nodeComparator = (n1, n2) -> (int) ((n1.heuristic + n1.pathCost) - (n2.heuristic + n2.pathCost));
+  static Comparator<Node> nodeComparator =
+      (n1, n2) -> (int) ((n1.heuristic + n1.pathCost) - (n2.heuristic + n2.pathCost));
 
   @Override
   public boolean equals(Object obj) {

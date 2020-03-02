@@ -13,15 +13,19 @@ public class Util {
   private static Map<Integer, Map.Entry<Integer, Integer>> goalXYs = getGoalCoordinateMap();
 
   static void printResult(long startTime, Problem problem, List<Actions> solutionSequence) {
+    printResult(startTime, problem, solutionSequence, false);
+  }
+  static void printResult(long startTime, Problem problem, List<Actions> solutionSequence, boolean isManhattanEnabled) {
     // convert to human-readable
     StringBuilder solutionBuilder = new StringBuilder();
     solutionSequence.forEach(actions -> solutionBuilder.append(actions));
     final String solution = solutionBuilder.toString().substring(4);
 
+    System.out.println("TRUE=Manhattan Distance.  FALSE=Count of Misplaced Squares: " + isManhattanEnabled);
     System.out.println("Moves: " + solution);
     System.out.println("Number of Nodes expanded: " + problem.expandedCount);
     System.out.println(String.format("Time elapsed: %d ns", System.nanoTime() - startTime));
-    System.out.println("Memory used by the entire JVM at Runtime: " + Util.getMemoryUsed() + " MB");
+    System.out.println("Memory used by the entire JVM at Runtime: " + Util.getMemoryUsed() + " MB\n");
   }
 
   static int[][] getStateFromSting(String input) {

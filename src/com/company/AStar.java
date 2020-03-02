@@ -14,28 +14,34 @@ public class AStar {
     final int[][] initialState = Util.getStateFromSting(input);
     final int[][] goalState = Util.getStateFromSting("1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0 ");
 
-    // time
-    final long startTime = System.nanoTime();
+    // execute A* Graph Search w/ simple heuristic
+    Problem problemOne = new Problem(initialState, goalState);
+    final long simpleStartTime = System.nanoTime();
+    final List<Actions> misplacedSquaresSolutionSequence = aStarSearch(problemOne, false);
+    Util.printResult(simpleStartTime, problemOne, misplacedSquaresSolutionSequence, false);
 
-    // execute A* Graph Search
-    Problem problem = new Problem(initialState, goalState);
-    final List<Actions> solutionSequence = aStarSearch(problem);
+    if (misplacedSquaresSolutionSequence == null) { System.out.println("Failure in simple heuristic search detected, continuing..."); }
 
-    if (solutionSequence == null) {
-      System.out.println("Failure in search detected");
+    // execute A* Graph Search w/ manhattan heuristic
+    final long manhattanStartTime = System.nanoTime();
+    Problem problemTwo = new Problem(initialState, goalState);
+    final List<Actions> manhattanSolutionSequence = aStarSearch(problemTwo, true);
+
+    if (misplacedSquaresSolutionSequence == null) {
+      System.out.println("Failure in heuristic search detected, exiting...");
       System.exit(1);
     }
 
-    Util.printResult(startTime, problem, solutionSequence);
+    Util.printResult(manhattanStartTime, problemTwo, manhattanSolutionSequence, true);
   }
 
   // Loosely based on Figure 3.14 in AIMA 3rd Ed plus description in section 3.5.2
   // A* search is algorithmically identical to UNIFORM-COST-SEARCH (Fig 3.14)
   // with the exception of the added heuristic
   // f(n) = g(n) + h(n)
-  static List<Actions> aStarSearch(Problem problem) { // returns a solution, or failue
+  static List<Actions> aStarSearch(Problem problem, boolean isManhattanEnabled) { // returns a solution, or failue
 
-    Node node = new Node(problem.initialState);
+    Node node = new Node(problem.initialState, isManhattanEnabled);
 
     Queue<Node> frontier = new PriorityQueue<>(Node.nodeComparator);
     frontier.add(node);
@@ -50,7 +56,7 @@ public class AStar {
       explored.add(node.state);
 
       for (Actions action : problem.actions(node.state)) {
-        Node child = node.childNode(problem, action);
+        Node child = node.childNode(problem, action, isManhattanEnabled);
         ++problem.expandedCount; // for metric tracking, not part of algo
         if (!explored.contains(child.state) && !frontier.contains(child)) {
           frontier.add(child);
