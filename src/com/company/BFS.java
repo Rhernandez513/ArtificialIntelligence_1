@@ -47,7 +47,7 @@ public class BFS {
       for (Actions action : problem.actions(node.state)) {
         Node child = node.childNode(problem, action);
         ++problem.expandedCount;
-        if (!(explored.contains(child.state) || frontier.contains(child))) {
+        if (!explored.contains(child.state) || !frontier.contains(child)) {
           if (problem.goalTest(child.state)) {
             return child.solution();
           }

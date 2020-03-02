@@ -53,7 +53,7 @@ class Node {
   }
 
   // Comparator anonymous class implementation
-  static Comparator<Node> nodeComparator = (n1, n2) -> (int) (n1.heuristic - n2.heuristic);
+  static Comparator<Node> nodeComparator = (n1, n2) -> (int) ((n1.heuristic + n1.pathCost) - (n2.heuristic + n2.pathCost));
 
   @Override
   public boolean equals(Object obj) {
