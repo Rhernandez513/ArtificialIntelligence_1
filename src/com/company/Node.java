@@ -30,7 +30,8 @@ class Node {
         problem.pathCost(this.pathCost),
         this,
         action,
-        Util.calculateMisplacedSquares(nextState, problem.goal));
+//        Util.calculateMisplacedSquares(nextState, problem.goal));
+        Util.calculateManhattanDistance(nextState));
   }
 
   List<Actions> solution() {

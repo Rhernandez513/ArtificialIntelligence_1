@@ -14,10 +14,6 @@ public class AStar {
     final int[][] initialState = Util.getStateFromSting(input);
     final int[][] goalState = Util.getStateFromSting("1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0 ");
 
-    // This calculation works, but I couldn't get the heuristic to work in the search before I ran
-    // out of time
-    //        int man = calculateManhattanDistance(initialState);
-
     // time
     final long startTime = System.nanoTime();
 
