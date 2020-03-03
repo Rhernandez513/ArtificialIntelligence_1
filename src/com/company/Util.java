@@ -21,7 +21,7 @@ public class Util {
     solutionSequence.forEach(actions -> solutionBuilder.append(actions));
     final String solution = solutionBuilder.toString().substring(4);
 
-    System.out.println("TRUE=Manhattan Distance.  FALSE=Count of Misplaced Squares: " + isManhattanEnabled);
+    System.out.println((isManhattanEnabled) ? "Manhattan Distance" : "Count of Misplaced Squares");
     System.out.println("Moves: " + solution);
     System.out.println("Number of Nodes expanded: " + problem.expandedCount);
     System.out.println(String.format("Time elapsed: %d ns", System.nanoTime() - startTime));
