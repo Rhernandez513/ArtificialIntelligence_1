@@ -9,6 +9,8 @@ import java.util.Map;
 
 public class Util {
 
+  static int[][] goalState = Util.getStateFromSting("1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0 ");
+
   // For runtime speed, since we know the goal state, we will use a lookup table
   private static Map<Integer, Map.Entry<Integer, Integer>> goalXYs = getGoalCoordinateMap();
 

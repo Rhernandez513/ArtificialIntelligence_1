@@ -13,24 +13,15 @@ class Node {
   Node(int[][] state) {
     this.state = state;
     this.pathCost = 0;
-    this.heuristic = Integer.MAX_VALUE;
+    this.heuristic = Util.calculateMisplacedSquares(state, Util.goalState);
     this.isManhattanEnabled = false;
   }
 
   Node(int[][] state, boolean isManhattanEnabled) {
     this.state = state;
     this.pathCost = 0;
-    this.heuristic = Integer.MAX_VALUE;
     this.isManhattanEnabled = isManhattanEnabled;
-  }
-
-  Node(int[][] state, int pathCost, Node parent, Actions action, int heuristic) {
-    this.state = state;
-    this.pathCost = pathCost;
-    this.parent = parent;
-    this.action = action;
-    this.heuristic = heuristic;
-    this.isManhattanEnabled = false;
+    this.heuristic = (this.isManhattanEnabled) ? Util.calculateManhattanDistance(this.state) : Util.calculateMisplacedSquares(this.state, Util.goalState);
   }
 
   Node(int[][] state, int pathCost, Node parent, Actions action, int heuristic, boolean isManhattanEnabled) {
@@ -77,6 +68,10 @@ class Node {
   // Comparator anonymous class implementation
   static Comparator<Node> nodeComparator =
       (n1, n2) -> (int) ((n1.heuristic + n1.pathCost) - (n2.heuristic + n2.pathCost));
+
+  Integer heuristicPathCost() {
+    return this.heuristic + this.pathCost;
+  }
 
   @Override
   public boolean equals(Object obj) {
