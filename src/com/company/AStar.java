@@ -39,7 +39,7 @@ public class AStar {
   // A* search is algorithmically identical to UNIFORM-COST-SEARCH (Fig 3.14)
   // with the exception of the added heuristic
   // f(n) = g(n) + h(n)
-  static List<Actions> aStarSearch(Problem problem, boolean isManhattanEnabled) { // returns a solution, or failue
+  static List<Actions> aStarSearch(Problem problem, boolean isManhattanEnabled) { // returns a solution, or failure
 
     Node node = new Node(problem.initialState, isManhattanEnabled);
 
