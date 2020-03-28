@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class IDAStar {
   public static void main(String[] args) {
-    System.out.println("Use Both Heuristics or only ManhattanDistance? y/n");
+    System.out.println("Use Both Heuristics (y) or only ManhattanDistance? y/n");
     Scanner s = new Scanner(System.in);
     Character i = s.nextLine().charAt(0);
 

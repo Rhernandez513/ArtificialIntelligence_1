@@ -3,24 +3,26 @@ University of Illinois at Chicago
 Spring 2020
 Professor Piotr Gmytrasiewicz
 
-Basic Idea is to solve the 15 puzzle by implementing an iterative deepening depth first search
-second version used a dynamic programming technique called memoization to ignore repeated states
+Basic Idea is to solve the 15 puzzle by implementing the Iterative Deepening A* search algorithm
+We use two different heuristics (1. Misplaced Squares; 2. Manhattan distance of state from goal), to show how better designed heuristics positively impact speedup
 
 Uses Java 8
 
-Step 1. rename Main.java.txt to Main.java
-
-Step 2. should be able to compile and run with
+Should be able to compile and run with
  ```
- javac IDDFS.java
- java IDDFS
+ javac IDAStar.java
+ java IDAStar
  ```
 
 Step 3.
 
 optionally run with a user input state string, ex:
 
-(Warning: Since manhattan distance wasn't able to be implemented fully, I noticed adding too much entropy into the input string
-makes the program run MUCH longer consider just one or two swaps to save yourself some time)
+ ```java IDAStar "1 2 3 4 5 10 6 0 9 7 11 8 13 14 15 12"```
 
- ```java IDDFS "1 7 2 4 5 0 3 8 9 6 11 12 13 10 14 15"```
+Step 4.
+
+The console will prompt you for input (y/n).
+'y' will trigger both Misplaced Tiles heuristic and Manhattan Distance heuristic
+Any input other than 'y' will trigger only Manhattan Distance heuristic.
+Compatible with both command line user input state string as well as default runtime string (demonstrated above) that should be solved in 2 iterations
