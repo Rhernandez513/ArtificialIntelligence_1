@@ -1,11 +1,7 @@
 package com.company;
 
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Scanner;
@@ -21,7 +17,7 @@ public class IDAStar {
 //    final String input = (args.length > 0) ? args[0] : "1 0 2 4 5 7 3 8 9 6 11 12 13 10 14 15";
     // two iter
     final String input = (args.length > 0) ? args[0] : "1 2 3 4 5 10 6 0 9 7 11 8 13 14 15 12";
-    // ONLY USE MANHATTAN WITH THESE, COMMENT OUT LINE 30 TO DISABLE Misplaced Tiles
+    // ONLY USE MANHATTAN WITH THESE BELOW THIS LINE, COMMENT OUT LINES 30-32 TO DISABLE Misplaced Tiles
     // five iter
 //    final String input = (args.length > 0) ? args[0] : "5 2 4 8 10 3 11 14 6 0 9 12 13 1 15 7";
     // nine iter
