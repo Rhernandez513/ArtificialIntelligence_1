@@ -1,0 +1,8 @@
+Let's try something new and attempt this assignment in C++17
+
+Main idea is to implement Value & Modified Policy iteration for a Markov Decision Process
+Figures 17.4 & 17.7 in AIMA V3 respectively
+
+These are examples of reinforcement learning algorithms
+
+P.S.  hope this goes well, else I'll have to try Python or Java
