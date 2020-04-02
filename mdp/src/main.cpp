@@ -2,7 +2,8 @@
 #include <string>
 #include <fstream>
 #include <regex>
-#include "gridWorld.h"
+#include "GridWorld.h"
+#include "MDP.h"
 
 std::string getLines(std::string fileName) {
     std::ifstream file(fileName);
@@ -50,7 +51,7 @@ std::vector<std::string> split(const std::string &str,
 
 int valueIteration();
 
-int policyIteration();
+int modifiedPolicyIteration();
 
 int modifiedBellmanEquation();
 
@@ -58,15 +59,15 @@ int bellmanEquation();
 
 int evaluatePolicy();
 
-int constructMarkovDecisionProcess();
+MDP constructMarkovDecisionProcess(std::string rawEpsilon, std::string rawGamme, std::string rawR, int state);
 
 int constructState();
 
 int processInput(std::string input);
 
-void constructGridWorld(std::string rawSize, std::string rawWallLocations, std::string rawTerminalStates) {
+GridWorld constructGridWorld(std::string rawSize, std::string rawWallLocations, std::string rawTerminalStates) {
 
-    // Determine width (x) and height (y) of grid
+    // Determine height (x) and height (y) of grid
     std::vector<std::string> _a = split(rawSize, ":");
     std::vector<std::string> a = split(_a[1], " ");
 
@@ -85,7 +86,14 @@ void constructGridWorld(std::string rawSize, std::string rawWallLocations, std::
 
     std::vector<std::string> _c = split(rawTerminalStates, ":");
     std::vector<std::string> c = split(_c[1], ",");
-
+    std::vector<State> terminalStates;
+    for (auto &s : c) {
+        s = trim(s);
+        std::vector<std::string> states = split(s, " ");
+        terminalStates.push_back(State(
+                std::stoi(states[0]), std::stoi(states[1]), std::stoi(states[2])));
+    }
+    return GridWorld(gridWidth, gridHeight, wallXYs, terminalStates);
 }
 
 int main(int argc, char *argv[]) {
@@ -96,12 +104,9 @@ int main(int argc, char *argv[]) {
         std::cout << str << std::endl;
     }
 
-//    gridWorld grid = constructGridWorld(lines[2], lines[6], lines[10]);
-    constructGridWorld(lines[2], lines[6], lines[10]);
+    GridWorld grid = constructGridWorld(lines[2], lines[6], lines[10]);
 
-    // size = lines[2]
-    // walls = lines[6]
-    // terminal states = lines[10]
+//    MDP mdp = constructMarkovDecisionProcess(lines[22],lines[20],lines[14], 1);
     // reward = lines[14]
     // transition probabilities = lines[18]
     // discount rate = lines[20]

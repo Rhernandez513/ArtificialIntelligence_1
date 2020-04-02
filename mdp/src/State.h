@@ -6,14 +6,14 @@
 #define MDP_STATE_H
 
 
-class state {
+class State {
     int x;
     int y;
     int reward;
 public:
-    state(int x, int y, int reward);
+    State(int x, int y, int reward);
 
-    virtual ~state();
+    virtual ~State();
 
     int getX() const;
 
