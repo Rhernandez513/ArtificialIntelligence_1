@@ -42,11 +42,11 @@ void GridWorld::setHeight(int height) {
 }
 
 int GridWorld::getWidth() const {
-    return height;
+    return width;
 }
 
 void GridWorld::setWidth(int width) {
-    GridWorld::height = width;
+    GridWorld::width = width;
 }
 
 const std::vector<std::pair<int, int>> &GridWorld::getPillars() const {

@@ -9,9 +9,9 @@
 class State {
     int x;
     int y;
-    int reward;
+    double reward;
 public:
-    State(int x, int y, int reward);
+    State(int x, int y, double reward);
 
     virtual ~State();
 
@@ -23,9 +23,9 @@ public:
 
     void setY(int y);
 
-    int getReward() const;
+    double getReward() const;
 
-    void setReward(int reward);
+    void setReward(double reward);
 };
 
 

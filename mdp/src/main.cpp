@@ -30,7 +30,6 @@ std::string trim(std::string &s) {
     return ltrim(rtrim(s));
 }
 
-
 // https://stackoverflow.com/a/13172514
 std::vector<std::string> split(const std::string &str,
                                const std::string &delimiter) {
@@ -59,11 +58,52 @@ int bellmanEquation();
 
 int evaluatePolicy();
 
-MDP constructMarkovDecisionProcess(std::string rawEpsilon, std::string rawGamme, std::string rawR, int state);
+MDP constructMarkovDecisionProcess(std::string rawT, std::string rawEpsilon, std::string rawGamma, std::string rawR, GridWorld grid) {
+    std::vector<std::string> _Tprobabilities = split(trim(split(rawT, ":")[1]), " ");
+    std::vector<double> Tprobabilities;
+    for(auto &s : _Tprobabilities) {
+        Tprobabilities.push_back(std::stod(s));
+    }
 
-int constructState();
 
-int processInput(std::string input);
+    double epsilon = std::stod(split(rawEpsilon, ":")[1]);
+    double gamma = std::stod(split(rawGamma, ":")[1]);
+    double R = std::stod(split(rawR, ":")[1]);
+    std::vector<State> terminalStates = grid.getTerminalCoordinates();
+    std::vector<std::pair<int, int>> walls = grid.getPillars();
+
+    std::vector<State> states;
+    int terminalStateCount = terminalStates.size();
+    int pillarCount = walls.size();
+    int width = grid.getWidth();
+    int height = grid.getHeight();
+    std::vector<std::pair<int, int>> populated;
+    for(int i = 0; i < width; ++i) {
+        if (i < terminalStateCount) {
+            int x = terminalStates[i].getX();
+            int y = terminalStates[i].getY();
+            states.push_back(State(x, y, terminalStates[i].getReward()));
+            populated.push_back(std::pair<int, int>(x, y));
+        }
+        if (i < pillarCount) {
+            int x = walls[i].first;
+            int y = walls[i].second;
+            states.push_back(State(x, y, 0.0));
+            populated.push_back(std::pair<int, int>(x, y));
+        }
+        for(int j = 0; j < height; ++j) {
+            if(std::find(populated.begin(), populated.end(), std::pair<int, int>(i+1, j+1)) != populated.end()) {
+                /* vector contains element */
+                continue;
+            } else {
+                /* vector does not contain element */
+                states.push_back(State(i + 1, j + 1, R));
+            }
+        }
+    }
+    std::cout << "states" << std::endl;
+    return MDP(Tprobabilities, epsilon, gamma, R, states);
+}
 
 GridWorld constructGridWorld(std::string rawSize, std::string rawWallLocations, std::string rawTerminalStates) {
 
@@ -106,10 +146,6 @@ int main(int argc, char *argv[]) {
 
     GridWorld grid = constructGridWorld(lines[2], lines[6], lines[10]);
 
-//    MDP mdp = constructMarkovDecisionProcess(lines[22],lines[20],lines[14], 1);
-    // reward = lines[14]
-    // transition probabilities = lines[18]
-    // discount rate = lines[20]
-    // epsilon = lines [22]
+    MDP mdp = constructMarkovDecisionProcess(lines[18], lines[22],lines[20],lines[14], grid);
     return 0;
 }

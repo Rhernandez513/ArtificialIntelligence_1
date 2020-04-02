@@ -4,7 +4,7 @@
 
 #include "State.h"
 
-State::State(int x, int y, int reward) : x(x), y(y), reward(reward) {}
+State::State(int x, int y, double reward) : x(x), y(y), reward(reward) {}
 
 State::~State() {
 
@@ -26,10 +26,10 @@ void State::setY(int y) {
     State::y = y;
 }
 
-int State::getReward() const {
+double State::getReward() const {
     return reward;
 }
 
-void State::setReward(int reward) {
+void State::setReward(double reward) {
     State::reward = reward;
 }

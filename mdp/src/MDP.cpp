@@ -6,36 +6,36 @@
 #include "Actions.h"
 
 
-float MDP::transitionModel(State statePrime, State state, Actions action) { return -1.00; }
+double MDP::transitionModel(State statePrime, State state, Actions action) { return -1.00; }
 
 
-MDP::MDP(const std::vector<float> &transitionProbabilities, float epsilon, float gamma, float r,
+MDP::MDP(const std::vector<double> &transitionProbabilities, double epsilon, double gamma, double R,
          const std::vector<State> &states) : transitionProbabilities(transitionProbabilities), epsilon(epsilon),
-                                             gamma(gamma), R(r), states(states) {}
+                                             gamma(gamma), R(R), states(states) {}
 
 MDP::~MDP() {}
 
-float MDP::getEpsilon() const {
+double MDP::getEpsilon() const {
     return epsilon;
 }
 
-void MDP::setEpsilon(float epsilon) {
+void MDP::setEpsilon(double epsilon) {
     MDP::epsilon = epsilon;
 }
 
-float MDP::getGamma() const {
+double MDP::getGamma() const {
     return gamma;
 }
 
-void MDP::setGamma(float gamma) {
+void MDP::setGamma(double gamma) {
     MDP::gamma = gamma;
 }
 
-float MDP::getR() const {
+double MDP::getR() const {
     return R;
 }
 
-void MDP::setR(float R) {
+void MDP::setR(double R) {
     MDP::R = R;
 }
 
@@ -47,10 +47,10 @@ void MDP::setStates(std::vector<State> states) {
     MDP::states = states;
 }
 
-const std::vector<float> &MDP::getTransitionProbabilities() const {
+const std::vector<double> &MDP::getTransitionProbabilities() const {
     return transitionProbabilities;
 }
 
-void MDP::setTransitionProbabilities(const std::vector<float> &transitionProbabilities) {
+void MDP::setTransitionProbabilities(const std::vector<double> &transitionProbabilities) {
     MDP::transitionProbabilities = transitionProbabilities;
 }

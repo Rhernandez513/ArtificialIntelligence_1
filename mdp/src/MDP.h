@@ -11,38 +11,38 @@
 #include "Actions.h"
 
 class MDP {
-    std::vector<float> transitionProbabilities;
-    float epsilon; // the maximum error allowed in any State
-    float gamma;   // discount factor
-    float R;       // immediate reward in non-terminal states
+    std::vector<double> transitionProbabilities;
+    double epsilon; // the maximum error allowed in any State
+    double gamma;   // discount factor
+    double R;       // immediate reward in non-terminal states
     std::vector<State> states;
 public:
-    MDP(const std::vector<float> &transitionProbabilities, float epsilon, float gamma, float r,
+    MDP(const std::vector<double> &transitionProbabilities, double epsilon, double gamma, double R,
         const std::vector<State> &states);
 
     virtual ~MDP();
 
-    const std::vector<float> &getTransitionProbabilities() const;
+    const std::vector<double> &getTransitionProbabilities() const;
 
-    void setTransitionProbabilities(const std::vector<float> &transitionProbabilities);
+    void setTransitionProbabilities(const std::vector<double> &transitionProbabilities);
 
-    float getEpsilon() const;
+    double getEpsilon() const;
 
-    void setEpsilon(float epsilon);
+    void setEpsilon(double epsilon);
 
-    float getGamma() const;
+    double getGamma() const;
 
-    void setGamma(float gamma);
+    void setGamma(double gamma);
 
-    float getR() const;
+    double getR() const;
 
-    void setR(float R);
+    void setR(double R);
 
     std::vector<State> getStates() const;
 
     void setStates(std::vector<State> states);
 
-    float transitionModel(State statePrime, State state, Actions action);
+    double transitionModel(State statePrime, State state, Actions action);
 };
 
 #endif //MDP_MDP_H
