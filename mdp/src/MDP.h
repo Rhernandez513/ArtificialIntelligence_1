@@ -9,6 +9,7 @@
 #include <vector>
 #include "State.h"
 #include "Actions.h"
+#include "GridWorld.h"
 
 class MDP {
     std::vector<double> transitionProbabilities;
@@ -42,7 +43,9 @@ public:
 
     void setStates(std::vector<State> states);
 
-    double transitionModel(State statePrime, State state, Actions action);
+    double transitionModel(GridWorld &grid, State statePrime, State state, Actions action);
+
+    Actions A(State s);
 };
 
 #endif //MDP_MDP_H

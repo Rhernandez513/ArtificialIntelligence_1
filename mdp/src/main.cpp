@@ -48,7 +48,30 @@ std::vector<std::string> split(const std::string &str,
     return strings;
 }
 
-int valueIteration();
+
+// Figure 17.4 in AIMA 3rd ed
+//function VALUE-ITERATION(mdp, epsilon) returns a utility funtion
+//    inputs: mdp, an MDP with states S, actions A(s), transition model P(s'| s,a),
+//            rewards R(s), discount: gamma
+//
+//    local variables: U, U', vectors of utilities for states in S, initially zero
+//                    delta, the maximum change in the utility of any state in an iteration
+//
+//    repeat
+//        U <- U'; delta <- 0
+//        for each state s in S do
+//            U'[s] <- R(s) + gamma * for max(action in A(s)) in sigma_s'{P(s'|s,a) * U[s']}
+//
+//            if absoulute_value(U'[s] - U[s]) > delta) then
+//                delta <- absolute_value(U'[s] - U[s])
+//    until delta < (epsilon * (1 - gamma)) / gamma
+//    return U
+
+// returns a Utility function for each State in MDP
+std::vector<std::pair<State, double>> valueIteration(MDP mdp, GridWorld grid) {
+    double gamma = mdp.getGamma();
+    std::vector<State> states = mdp.getStates();
+}
 
 int modifiedPolicyIteration();
 
@@ -58,10 +81,11 @@ int bellmanEquation();
 
 int evaluatePolicy();
 
-MDP constructMarkovDecisionProcess(std::string rawT, std::string rawEpsilon, std::string rawGamma, std::string rawR, GridWorld grid) {
+MDP constructMarkovDecisionProcess(std::string rawT, std::string rawEpsilon, std::string rawGamma, std::string rawR,
+                                   GridWorld grid) {
     std::vector<std::string> _Tprobabilities = split(trim(split(rawT, ":")[1]), " ");
     std::vector<double> Tprobabilities;
-    for(auto &s : _Tprobabilities) {
+    for (auto &s : _Tprobabilities) {
         Tprobabilities.push_back(std::stod(s));
     }
 
@@ -78,7 +102,7 @@ MDP constructMarkovDecisionProcess(std::string rawT, std::string rawEpsilon, std
     int width = grid.getWidth();
     int height = grid.getHeight();
     std::vector<std::pair<int, int>> populated;
-    for(int i = 0; i < width; ++i) {
+    for (int i = 0; i < width; ++i) {
         if (i < terminalStateCount) {
             int x = terminalStates[i].getX();
             int y = terminalStates[i].getY();
@@ -91,8 +115,8 @@ MDP constructMarkovDecisionProcess(std::string rawT, std::string rawEpsilon, std
             states.push_back(State(x, y, 0.0));
             populated.push_back(std::pair<int, int>(x, y));
         }
-        for(int j = 0; j < height; ++j) {
-            if(std::find(populated.begin(), populated.end(), std::pair<int, int>(i+1, j+1)) != populated.end()) {
+        for (int j = 0; j < height; ++j) {
+            if (std::find(populated.begin(), populated.end(), std::pair<int, int>(i + 1, j + 1)) != populated.end()) {
                 /* vector contains element */
                 continue;
             } else {
@@ -146,6 +170,6 @@ int main(int argc, char *argv[]) {
 
     GridWorld grid = constructGridWorld(lines[2], lines[6], lines[10]);
 
-    MDP mdp = constructMarkovDecisionProcess(lines[18], lines[22],lines[20],lines[14], grid);
+    MDP mdp = constructMarkovDecisionProcess(lines[18], lines[22], lines[20], lines[14], grid);
     return 0;
 }

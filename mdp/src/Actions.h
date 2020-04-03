@@ -7,7 +7,7 @@
 
 
 enum class Actions {
-    U, L, R, D
+    Up, Left, Right, Down
 };
 
 
