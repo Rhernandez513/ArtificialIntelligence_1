@@ -4,6 +4,7 @@
 #include <regex>
 #include <map>
 #include <cmath>
+#include <sstream>
 #include "GridWorld.h"
 #include "MDP.h"
 
@@ -52,24 +53,57 @@ std::vector<std::string> split(const std::string &str,
     return strings;
 }
 
+// Example
+//     3
+//     2
+// y ^ 1  2  3
+//    x >
+std::string prettyPrintGrid(std::map<State, double> const &utilityVector, GridWorld &gridWorld, double epsilon) {
 
-// Figure 17.4 in AIMA 3rd ed
-//function VALUE-ITERATION(mdp, epsilon) returns a utility funtion
-//    inputs: mdp, an MDP with states S, actions A(s), transition model P(s'| s,a),
-//            rewards R(s), discount: gamma
-//
-//    local variables: U, U', vectors of utilities for states in S, initially zero
-//                    delta, the maximum change in the utility of any state in an iteration
-//
-//    repeat
-//        U <- U'; delta <- 0
-//        for each state s in S do
-//            U'[s] <- R(s) + gamma * for max(action in A(s)) in sigma_s'{P(s'|s,a) * U[s']}
-//
-//            if absoulute_value(U'[s] - U[s]) > delta) then
-//                delta <- absolute_value(U'[s] - U[s])
-//    until delta < (epsilon * (1 - gamma)) / gamma
-//    return U
+    std::stringstream s;
+    s << epsilon;
+    int sig = 1;
+    for(int i = 1; i < s.str().size(); ++i) {
+        sig *= 10;
+    }
+    s.str(std::string());
+    s.clear();
+
+
+    int width = gridWorld.getWidth();
+    int y = gridWorld.getHeight();
+    int x = 1;
+
+    int stateCount = utilityVector.size();
+    while(1) {
+        if(stateCount == 0) { break; }
+        for(auto &v : utilityVector) {
+            if (v.first.getX() == x && v.first.getY() == y) {
+                --stateCount;
+                // TODO determine decimal places in epsilon
+                // then floor round decimal places + 1 decimal place for pretty printed output
+                double value = (floor(v.second * sig) / sig);
+                if(value == 0) {
+                    s << "----- ";
+                } else {
+                    s << value << " ";
+                }
+                if(v.first.getX() == width) {
+                    s << std::endl;
+                }
+                break;
+            }
+        }
+        if(x == width) {
+            x = 1;
+            --y;
+        } else {
+            ++x;
+        }
+    }
+
+    return s.str();
+}
 
 State getStatePrime(std::vector<State> allStates, State state, Actions action) {
     int x = state.getX();
@@ -96,18 +130,21 @@ State getStatePrime(std::vector<State> allStates, State state, Actions action) {
     }
 }
 
+// Figure 17.4 in AIMA 3rd ed
 // returns a Utility function for each State in MDP
-std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid) {
-    std::vector<State> states = mdp.getStates();
+std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProgress) {
+    double delta;
+    double epsilon = mdp.getEpsilon();
+    double gamma = mdp.getGamma();
+
     std::map<State, double> U;
     std::map<State, double> UPrime;
+    std::vector<State> states = mdp.getStates();
+
     for(auto &s : mdp.getStates()) {
         U[s] = mdp.getEpsilon();
         UPrime[s] = mdp.getEpsilon();
     }
-    double delta = 0.0;
-    double epsilon = mdp.getEpsilon();
-    double gamma = mdp.getGamma();
     int iter = 0;
     do {
         delta = 0.0;
@@ -127,8 +164,11 @@ std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid) {
                 delta = abs;
             }
         }
+        if(printProgress) {
+            std::cout << "Iteration " << ++iter << std::endl;
+            std::cout << prettyPrintGrid(U, grid, mdp.getEpsilon());
+        }
         U = UPrime; // will perform copy operation
-//        std::cout << "Iteration " << ++iter << std::endl;
     } while(delta < (epsilon * (1 - gamma)) / gamma);
     return U;
 }
@@ -219,26 +259,20 @@ GridWorld constructGridWorld(std::string rawSize, std::string rawWallLocations, 
     return GridWorld(gridWidth, gridHeight, wallXYs, terminalStates);
 }
 
+
 int main(int argc, char *argv[]) {
-    std::cout << "Hello, World!" << std::endl;
     std::string fileInput = getLines(argv[1]);
     std::vector<std::string> lines = split(trim(fileInput), "\n");
-    for (auto &str : lines) {
-        std::cout << str << std::endl;
-    }
 
     GridWorld grid = constructGridWorld(lines[2], lines[6], lines[10]);
 
     MDP mdp = constructMarkovDecisionProcess(lines[18], lines[22], lines[20], lines[14], grid);
-    std::map<State, double> UtilityVector = valueIteration(mdp, grid);
+    std::map<State, double> utilityVector;
+
     std::cout << "This version of the assignment is in an incomplete state" << std::endl;
-    std::cout << "Input format should be the same as mdp_input.txt example provided (whitespace, colons, etc)" << std::endl;
-    std::cout << "Here is the Utility vector at the conclusion of the VALUE-ITERATION subroutine: " << std::endl;
-    for(auto &v : UtilityVector) {
-        double e = mdp.getEpsilon();
-        // TODO determine decimal places in epsilon
-        // then floor round decimal places + 1 decimal place for pretty printed output
-        std::cout << "State: x(" << v.first.getX() << ") y(" << v.first.getY() << ")"  << " Utility: " << (floor(v.second * 10000) / 10000) << std::endl;
-    }
+    std::cout << "Input format should be the same as mdp_input.txt example provided (whitespace, colons, etc)\n" << std::endl;
+    utilityVector = valueIteration(mdp, grid, true);
+    std::cout << "\nFinal Utility Vector (Value-Iteration): " << std::endl;
+    std::cout << prettyPrintGrid(utilityVector, grid, mdp.getEpsilon()) << std::endl;
     return 0;
 }

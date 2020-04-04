@@ -1,7 +1,7 @@
 TO BUILD:
 	make
 TO RUN:
-	./cmake-build-debug/mdp "mdp_input.txt"
+	./cmake-build-debug/mdp "resources/mdp_input.txt"
 
 Let's try something new and attempt this assignment in C++17
 
