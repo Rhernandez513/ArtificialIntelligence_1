@@ -7,6 +7,8 @@
 #include "GridWorld.h"
 #include "MDP.h"
 
+// Hello world
+
 std::string getLines(std::string fileName) {
     std::ifstream file(fileName);
     std::string str;
@@ -106,12 +108,8 @@ std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid) {
     double delta = 0.0;
     double epsilon = mdp.getEpsilon();
     double gamma = mdp.getGamma();
+    int iter = 0;
     do {
-//    while(delta < (epsilon * (1 - gamma)) / gamma) {
-//        for(auto& [key, value] : UPrime) {
-//            U[key] = value;
-//        }
-//        U = UPrime;
         delta = 0.0;
         for(auto &state : states) {
             std::set<Actions> actions = mdp.A(state, grid);
@@ -129,9 +127,8 @@ std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid) {
                 delta = abs;
             }
         }
-//        // I don't exactly know why I need to try and copy twice but that bug is to be worked out
         U = UPrime; // will perform copy operation
-//    }
+//        std::cout << "Iteration " << ++iter << std::endl;
     } while(delta < (epsilon * (1 - gamma)) / gamma);
     return U;
 }
@@ -239,6 +236,8 @@ int main(int argc, char *argv[]) {
     std::cout << "Here is the Utility vector at the conclusion of the VALUE-ITERATION subroutine: " << std::endl;
     for(auto &v : UtilityVector) {
         double e = mdp.getEpsilon();
+        // TODO determine decimal places in epsilon
+        // then floor round decimal places + 1 decimal place for pretty printed output
         std::cout << "State: x(" << v.first.getX() << ") y(" << v.first.getY() << ")"  << " Utility: " << (floor(v.second * 10000) / 10000) << std::endl;
     }
     return 0;
