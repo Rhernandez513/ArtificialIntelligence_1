@@ -26,6 +26,18 @@ public:
     double getReward() const;
 
     void setReward(double reward);
+
+    bool operator==(const State &rhs) const;
+
+    bool operator!=(const State &rhs) const;
+
+    bool operator<(const State &rhs) const;
+
+    bool operator>(const State &rhs) const;
+
+    bool operator<=(const State &rhs) const;
+
+    bool operator>=(const State &rhs) const;
 };
 
 

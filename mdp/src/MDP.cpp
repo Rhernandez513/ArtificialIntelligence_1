@@ -2,10 +2,7 @@
 // Created by Robert David Hernandez on 3/29/20.
 //
 
-#include <iostream>
 #include "MDP.h"
-#include "Actions.h"
-#include "GridWorld.h"
 
 
 MDP::MDP(const std::vector<double> &transitionProbabilities, double epsilon, double gamma, double R,
@@ -14,14 +11,22 @@ MDP::MDP(const std::vector<double> &transitionProbabilities, double epsilon, dou
 
 MDP::~MDP() {}
 
+// this needs to return the weighted reward state to statePrime
 double MDP::transitionModel(GridWorld &grid, State statePrime, State state, Actions action) {
 
-    // check if movement to statePrime is actually possible
-    // since it not possible to move into a pillar
+    // illegal to move into our out of a pillar
     std::vector<std::pair<int, int>> pillars = grid.getPillars();
     for(auto &pillar : pillars) {
-        if(statePrime.getX() == pillar.first && statePrime.getY() == pillar.second) {
-            return 0.0;
+        if (state.getX() == pillar.first && state.getY() == pillar.second) {
+            return this->getEpsilon();
+        } else if(statePrime.getX() == pillar.first && statePrime.getY() == pillar.second) {
+            return this->getEpsilon();
+        }
+    }
+    // Terminal States have utility values provided by input
+    for(auto &s : grid.getTerminalCoordinates()) {
+        if(statePrime.getX()  == s.getX() && statePrime.getY() == s.getY()) {
+            return s.getReward();
         }
     }
 
@@ -242,11 +247,31 @@ double MDP::transitionModel(GridWorld &grid, State statePrime, State state, Acti
             break;
     }
 
-    return (probability > 1.0) ? 1.0 : probability;
+    probability = (probability > 1.0) ? 1.0 : probability;
+    return statePrime.getReward() * probability;
 }
 
 
-Actions A(State s);
+std::set<Actions> MDP::A(State &s, GridWorld &grid) {
+    std::set<Actions> actions;
+    int width = grid.getWidth();
+    int height = grid.getHeight();
+    int x = s.getX();
+    int y = s.getY();
+    if(y < height) {
+        actions.insert(Actions::Up);
+    }
+    if(x < width) {
+        actions.insert(Actions::Right);
+    }
+    if(x > 1) {
+        actions.insert(Actions::Left);
+    }
+    if(y > 1) {
+        actions.insert(Actions::Down);
+    }
+    return actions;
+}
 
 double MDP::getEpsilon() const {
     return epsilon;
@@ -272,7 +297,7 @@ void MDP::setR(double R) {
     MDP::R = R;
 }
 
-std::vector<State> MDP::getStates() const {
+std::vector<State> MDP::getStates() {
     return states;
 }
 

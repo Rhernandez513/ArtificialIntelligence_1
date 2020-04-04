@@ -33,3 +33,32 @@ double State::getReward() const {
 void State::setReward(double reward) {
     State::reward = reward;
 }
+
+bool State::operator==(const State &rhs) const {
+    return x == rhs.x &&
+           y == rhs.y;
+}
+
+bool State::operator!=(const State &rhs) const {
+    return !(rhs == *this);
+}
+
+bool State::operator<(const State &rhs) const {
+    if (x < rhs.x)
+        return true;
+    if (rhs.x < x)
+        return false;
+    return y < rhs.y;
+}
+
+bool State::operator>(const State &rhs) const {
+    return rhs < *this;
+}
+
+bool State::operator<=(const State &rhs) const {
+    return !(rhs < *this);
+}
+
+bool State::operator>=(const State &rhs) const {
+    return !(*this < rhs);
+}

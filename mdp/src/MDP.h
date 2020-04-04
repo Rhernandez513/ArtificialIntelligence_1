@@ -7,6 +7,7 @@
 
 
 #include <vector>
+#include <set>
 #include "State.h"
 #include "Actions.h"
 #include "GridWorld.h"
@@ -39,13 +40,13 @@ public:
 
     void setR(double R);
 
-    std::vector<State> getStates() const;
+    std::vector<State> getStates();
 
     void setStates(std::vector<State> states);
 
     double transitionModel(GridWorld &grid, State statePrime, State state, Actions action);
 
-    Actions A(State s);
+    std::set<Actions> A(State &s, GridWorld &grid);
 };
 
 #endif //MDP_MDP_H

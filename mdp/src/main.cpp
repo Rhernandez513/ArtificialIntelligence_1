@@ -2,6 +2,8 @@
 #include <string>
 #include <fstream>
 #include <regex>
+#include <map>
+#include <cmath>
 #include "GridWorld.h"
 #include "MDP.h"
 
@@ -67,10 +69,71 @@ std::vector<std::string> split(const std::string &str,
 //    until delta < (epsilon * (1 - gamma)) / gamma
 //    return U
 
+State getStatePrime(std::vector<State> allStates, State state, Actions action) {
+    int x = state.getX();
+    int y = state.getY();
+    State protoStatePrime = State(0.0, 0.0, 0.0);
+    switch (action) {
+        case Actions::Up:
+            protoStatePrime = State(x, ++y, 0.0);
+            break;
+        case Actions::Left:
+            protoStatePrime = State(--x, y, 0.0);
+            break;
+        case Actions::Right:
+            protoStatePrime = State(++x, y, 0.0);
+            break;
+        case Actions::Down:
+            protoStatePrime = State(x, --y, 0.0);
+            break;
+    }
+    for(auto &s : allStates) {
+        if(s == protoStatePrime) {
+            return s;
+        }
+    }
+}
+
 // returns a Utility function for each State in MDP
-std::vector<std::pair<State, double>> valueIteration(MDP mdp, GridWorld grid) {
-    double gamma = mdp.getGamma();
+std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid) {
     std::vector<State> states = mdp.getStates();
+    std::map<State, double> U;
+    std::map<State, double> UPrime;
+    for(auto &s : mdp.getStates()) {
+        U[s] = mdp.getEpsilon();
+        UPrime[s] = mdp.getEpsilon();
+    }
+    double delta = 0.0;
+    double epsilon = mdp.getEpsilon();
+    double gamma = mdp.getGamma();
+    do {
+//    while(delta < (epsilon * (1 - gamma)) / gamma) {
+//        for(auto& [key, value] : UPrime) {
+//            U[key] = value;
+//        }
+//        U = UPrime;
+        delta = 0.0;
+        for(auto &state : states) {
+            std::set<Actions> actions = mdp.A(state, grid);
+            std::vector<double> protoUtilities;
+            for(auto &action : actions) {
+                State statePrime = getStatePrime(mdp.getStates(), state, action);
+                double weightedTransitionReward = mdp.transitionModel(grid, statePrime, state, action);
+                double utility = U[statePrime];
+                protoUtilities.push_back(weightedTransitionReward * utility);
+            }
+            double maxUtility = *std::max_element(protoUtilities.begin(), protoUtilities.end());
+            UPrime[state] = state.getReward() + (gamma * maxUtility);
+            double abs = std::fabs(UPrime[state] - U[state]);
+            if(abs > delta) {
+                delta = abs;
+            }
+        }
+//        // I don't exactly know why I need to try and copy twice but that bug is to be worked out
+        U = UPrime; // will perform copy operation
+//    }
+    } while(delta < (epsilon * (1 - gamma)) / gamma);
+    return U;
 }
 
 int modifiedPolicyIteration();
@@ -125,7 +188,6 @@ MDP constructMarkovDecisionProcess(std::string rawT, std::string rawEpsilon, std
             }
         }
     }
-    std::cout << "states" << std::endl;
     return MDP(Tprobabilities, epsilon, gamma, R, states);
 }
 
@@ -171,5 +233,13 @@ int main(int argc, char *argv[]) {
     GridWorld grid = constructGridWorld(lines[2], lines[6], lines[10]);
 
     MDP mdp = constructMarkovDecisionProcess(lines[18], lines[22], lines[20], lines[14], grid);
+    std::map<State, double> UtilityVector = valueIteration(mdp, grid);
+    std::cout << "This version of the assignment is in an incomplete state" << std::endl;
+    std::cout << "Input format should be the same as mdp_input.txt example provided (whitespace, colons, etc)" << std::endl;
+    std::cout << "Here is the Utility vector at the conclusion of the VALUE-ITERATION subroutine: " << std::endl;
+    for(auto &v : UtilityVector) {
+        double e = mdp.getEpsilon();
+        std::cout << "State: x(" << v.first.getX() << ") y(" << v.first.getY() << ")"  << " Utility: " << (floor(v.second * 10000) / 10000) << std::endl;
+    }
     return 0;
 }
