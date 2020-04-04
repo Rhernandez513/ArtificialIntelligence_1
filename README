@@ -3,6 +3,8 @@ University of Illinois at Chicago
 Spring 2020
 Professor Piotr Gmytrasiewicz
 
+# test message please ignore
+
 Basic Idea is to solve the 15 puzzle by implementing the Iterative Deepening A* search algorithm
 We use two different heuristics (1. Misplaced Squares; 2. Manhattan distance of state from goal), to show how better designed heuristics positively impact speedup
 
