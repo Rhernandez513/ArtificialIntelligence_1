@@ -140,6 +140,19 @@ bool isTerminalOrWall(State &state, GridWorld &grid) {
     return false;
 }
 
+double bellmanEquation(std::set<Actions> &actions, MDP &mdp, State &state, GridWorld &grid, std::map<State, double> &U) {
+    std::vector<double> protoUtilities;
+    for(auto &action : actions) {
+        State statePrime = getStatePrime(mdp.getStates(), state, action);
+        double weightedTransitionReward = mdp.transitionModel(grid, statePrime, state, action);
+        double utility = U[statePrime];
+        protoUtilities.push_back(weightedTransitionReward * utility);
+    }
+    double maxUtility = *std::max_element(protoUtilities.begin(), protoUtilities.end());
+
+    return state.getReward() + (mdp.getGamma() * maxUtility);
+}
+
 // Figure 17.4 in AIMA 3rd ed
 // returns a Utility function for each State in MDP
 std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProgress) {
@@ -167,15 +180,7 @@ std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProg
             // if terminal state, we don't update it's utility
             if(isTerminalOrWall(state, grid)) { continue; }
             std::set<Actions> actions = mdp.A(state, grid);
-            std::vector<double> protoUtilities;
-            for(auto &action : actions) {
-                State statePrime = getStatePrime(mdp.getStates(), state, action);
-                double weightedTransitionReward = mdp.transitionModel(grid, statePrime, state, action);
-                double utility = U[statePrime];
-                protoUtilities.push_back(weightedTransitionReward * utility);
-            }
-            double maxUtility = *std::max_element(protoUtilities.begin(), protoUtilities.end());
-            UPrime[state] = state.getReward() + (gamma * maxUtility);
+            UPrime[state] = bellmanEquation(actions, mdp, state, grid, U);
             double abs = std::fabs(UPrime[state] - U[state]);
             if(abs > delta) {
                 delta = abs;
@@ -296,8 +301,6 @@ int evaluatePolicy(int k, MDP &mdp, GridWorld &grid, bool printProgress) {
 int modifiedPolicyIteration();
 
 int modifiedBellmanEquation();
-
-int bellmanEquation();
 
 
 int main(int argc, char *argv[]) {
