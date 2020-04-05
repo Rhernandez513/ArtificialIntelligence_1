@@ -80,13 +80,11 @@ std::string prettyPrintGrid(std::map<State, double> const &utilityVector, GridWo
         for(auto &v : utilityVector) {
             if (v.first.getX() == x && v.first.getY() == y) {
                 --stateCount;
-                // TODO determine decimal places in epsilon
-                // then floor round decimal places + 1 decimal place for pretty printed output
                 double value = (floor(v.second * sig) / sig);
                 if(value == 0) {
-                    s << "----- ";
+                    s << "   -----  ";
                 } else {
-                    s << value << " ";
+                    s << " " << value << " ";
                 }
                 if(v.first.getX() == width) {
                     s << std::endl;
@@ -130,6 +128,20 @@ State getStatePrime(std::vector<State> allStates, State state, Actions action) {
     }
 }
 
+bool isTerminalOrWall(State &state, GridWorld &grid) {
+    for(auto &pair: grid.getTerminalCoordinates()) {
+        if(state.getX() == pair.getX() && state.getY() == pair.getY()) {
+            return true;
+        }
+    }
+    for(auto &pair : grid.getPillars()) {
+        if(state.getX() == pair.first && state.getY() == pair.second) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Figure 17.4 in AIMA 3rd ed
 // returns a Utility function for each State in MDP
 std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProgress) {
@@ -142,13 +154,20 @@ std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProg
     std::vector<State> states = mdp.getStates();
 
     for(auto &s : mdp.getStates()) {
-        U[s] = mdp.getEpsilon();
-        UPrime[s] = mdp.getEpsilon();
+        if(isTerminalOrWall(s, grid)) {
+            U[s] = s.getReward();
+            UPrime[s] = s.getReward();
+        } else {
+            U[s] = mdp.getEpsilon();
+            UPrime[s] = mdp.getEpsilon();
+        }
     }
     int iter = 0;
     do {
         delta = 0.0;
         for(auto &state : states) {
+            // if terminal state, we don't update it's utility
+            if(isTerminalOrWall(state, grid)) { continue; }
             std::set<Actions> actions = mdp.A(state, grid);
             std::vector<double> protoUtilities;
             for(auto &action : actions) {
@@ -165,7 +184,7 @@ std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProg
             }
         }
         if(printProgress) {
-            std::cout << "Iteration " << ++iter << std::endl;
+            std::cout << "Value Iteration #" << ++iter << std::endl;
             std::cout << prettyPrintGrid(U, grid, mdp.getEpsilon());
         }
         U = UPrime; // will perform copy operation
@@ -173,13 +192,20 @@ std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProg
     return U;
 }
 
+
 int modifiedPolicyIteration();
 
 int modifiedBellmanEquation();
 
 int bellmanEquation();
 
-int evaluatePolicy();
+// basic idea is to run Value Iteration K times
+int evaluatePolicy(int k, MDP &mdp, GridWorld &grid, bool printProgress) {
+//    lamda -> std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProgress, std::map<State, double>* currentUtility) {
+//        return valueIteration(&mdp, &grid, printProgress);
+//    }
+
+}
 
 MDP constructMarkovDecisionProcess(std::string rawT, std::string rawEpsilon, std::string rawGamma, std::string rawR,
                                    GridWorld grid) {

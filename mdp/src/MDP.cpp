@@ -18,9 +18,9 @@ double MDP::transitionModel(GridWorld &grid, State statePrime, State state, Acti
     std::vector<std::pair<int, int>> pillars = grid.getPillars();
     for(auto &pillar : pillars) {
         if (state.getX() == pillar.first && state.getY() == pillar.second) {
-            return this->getEpsilon();
+            return 0.0;
         } else if(statePrime.getX() == pillar.first && statePrime.getY() == pillar.second) {
-            return this->getEpsilon();
+            return 0.0;
         }
     }
     // Terminal States have utility values provided by input
