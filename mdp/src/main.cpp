@@ -140,7 +140,7 @@ bool isTerminalOrWall(State &state, GridWorld &grid) {
     return false;
 }
 
-double bellmanEquation(std::set<Actions> &actions, MDP &mdp, State &state, GridWorld &grid, std::map<State, double> &U) {
+double bellmanEquation(std::set<Actions> &actions, MDP &mdp, State const &state, GridWorld &grid, std::map<State, double> &U) {
     std::vector<double> protoUtilities;
     for(auto &action : actions) {
         State statePrime = getStatePrime(mdp.getStates(), state, action);
@@ -273,14 +273,6 @@ GridWorld constructGridWorld(std::string rawSize, std::string rawWallLocations, 
     return GridWorld(gridWidth, gridHeight, wallXYs, terminalStates);
 }
 
-// basic idea is to run Value Iteration K times
-int evaluatePolicy(int k, MDP &mdp, GridWorld &grid, bool printProgress) {
-//    lamda -> std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProgress, std::map<State, double>* currentUtility) {
-//        return valueIteration(&mdp, &grid, printProgress);
-//    }
-
-}
-
 // Psuedo
 //function POLICY-ITERATION(mdp) returns a policy
 //    inputs: mdp, an MDP with States, actions A(s), transition model P(s' | s,a)
@@ -297,10 +289,22 @@ int evaluatePolicy(int k, MDP &mdp, GridWorld &grid, bool printProgress) {
 //    until unchanged?
 //    return pi
 
+
+// basic idea is to run Bellman Update k times
+std::map<State, double> policyEvaluation(std::map<State, Actions> &pi, std::map<State, double> &U, MDP &mdp, GridWorld &grid) {
+    int k = 10;
+    for(int i = 0; i < k; ++i) {
+        for(auto &v : U) {
+            State state = v.first; // more readable, copy ops are not a worry
+            std::set<Actions> action { pi[state] };
+            U[state] = bellmanEquation(action, mdp, state, grid, U);
+        }
+    }
+    return U;
+}
+
 // based on AIMA 3rd ed, Figure 17.7
 int modifiedPolicyIteration();
-
-int modifiedBellmanEquation();
 
 
 int main(int argc, char *argv[]) {
