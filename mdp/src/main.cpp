@@ -8,8 +8,6 @@
 #include "GridWorld.h"
 #include "MDP.h"
 
-// Hello world
-
 std::string getLines(std::string fileName) {
     std::ifstream file(fileName);
     std::string str;
@@ -192,21 +190,6 @@ std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProg
     return U;
 }
 
-
-int modifiedPolicyIteration();
-
-int modifiedBellmanEquation();
-
-int bellmanEquation();
-
-// basic idea is to run Value Iteration K times
-int evaluatePolicy(int k, MDP &mdp, GridWorld &grid, bool printProgress) {
-//    lamda -> std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProgress, std::map<State, double>* currentUtility) {
-//        return valueIteration(&mdp, &grid, printProgress);
-//    }
-
-}
-
 MDP constructMarkovDecisionProcess(std::string rawT, std::string rawEpsilon, std::string rawGamma, std::string rawR,
                                    GridWorld grid) {
     std::vector<std::string> _Tprobabilities = split(trim(split(rawT, ":")[1]), " ");
@@ -284,6 +267,37 @@ GridWorld constructGridWorld(std::string rawSize, std::string rawWallLocations, 
     }
     return GridWorld(gridWidth, gridHeight, wallXYs, terminalStates);
 }
+
+// basic idea is to run Value Iteration K times
+int evaluatePolicy(int k, MDP &mdp, GridWorld &grid, bool printProgress) {
+//    lamda -> std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProgress, std::map<State, double>* currentUtility) {
+//        return valueIteration(&mdp, &grid, printProgress);
+//    }
+
+}
+
+// Psuedo
+//function POLICY-ITERATION(mdp) returns a policy
+//    inputs: mdp, an MDP with States, actions A(s), transition model P(s' | s,a)
+//    local variables: U, a vector of utilities for states in S, initially zero
+//                     pi, a policy vector indexed by state, initially random
+//
+//    repeat
+//       U <- POLICY-EVALUATION(pi, U, mdp)
+//       unchanged? <- true
+//       for each state in s do
+//           if max(a in A(s)) in sigma_s'{ P(s'|s,a) U[s']} > sigma_s'{ P(s'| s, pi[s]) * U[s'] } then do
+//               pi[s] <- argmax(a in A(s)) in sigma_s'{ P(s' | s,a) * U[s']
+//               unchanged? <- false
+//    until unchanged?
+//    return pi
+
+// based on AIMA 3rd ed, Figure 17.7
+int modifiedPolicyIteration();
+
+int modifiedBellmanEquation();
+
+int bellmanEquation();
 
 
 int main(int argc, char *argv[]) {
