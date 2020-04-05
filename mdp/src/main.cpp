@@ -164,7 +164,7 @@ std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProg
     std::map<State, double> UPrime;
     std::vector<State> states = mdp.getStates();
 
-    for(auto &s : mdp.getStates()) {
+    for(auto &s : states) {
         if(isTerminalOrWall(s, grid)) {
             U[s] = s.getReward();
             UPrime[s] = s.getReward();
@@ -291,7 +291,7 @@ GridWorld constructGridWorld(std::string rawSize, std::string rawWallLocations, 
 
 
 // basic idea is to run Bellman Update k times
-std::map<State, double> policyEvaluation(std::map<State, Actions> &pi, std::map<State, double> &U, MDP &mdp, GridWorld &grid) {
+std::map<State, double> policyEvaluation(std::map<State, Actions> &pi, std::map<State, double> U, MDP &mdp, GridWorld &grid) {
     int k = 10;
     for(int i = 0; i < k; ++i) {
         for(auto &v : U) {
@@ -304,10 +304,30 @@ std::map<State, double> policyEvaluation(std::map<State, Actions> &pi, std::map<
 }
 
 // based on AIMA 3rd ed, Figure 17.7
-int modifiedPolicyIteration();
+int modifiedPolicyIteration(MDP &mdp, GridWorld &grid) {
+    // init
+    std::map<State, Actions> pi;
+    std::map<State, double> U;
+    std::vector<State> states = mdp.getStates();
+    srand((unsigned)time(NULL));
+    for(auto &s : states) {
+        U[s] = (isTerminalOrWall(s, grid)) ? s.getReward() : mdp.getEpsilon();
+        pi[s] = Actions(rand() % 4 + 1);
+    }
+    bool unchanged = true;
+    do {
+        U = policyEvaluation(pi, U, mdp, grid);
+        for(auto &state: states) {
+//           if max(a in A(s)) in sigma_s'{ P(s'|s,a) U[s']} > sigma_s'{ P(s'| s, pi[s]) * U[s'] } then do
+//               pi[s] <- argmax(a in A(s)) in sigma_s'{ P(s' | s,a) * U[s']
+//               unchanged? <- false
+        }
+    } while (unchanged);
+}
 
 
 int main(int argc, char *argv[]) {
+
     std::string fileInput = getLines(argv[1]);
     std::vector<std::string> lines = split(trim(fileInput), "\n");
 
