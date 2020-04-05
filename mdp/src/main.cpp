@@ -412,6 +412,10 @@ std::map<State, Actions> modifiedPolicyIteration(MDP &mdp, GridWorld &grid, bool
 
 int main(int argc, char *argv[]) {
     int pathArgPlacement;
+    if(argc == 1) {
+        std::cout << "Please provide input" << std::endl;
+        return 1;
+    }
     if(argc == 2) {
        pathArgPlacement = 1;
     } else {
