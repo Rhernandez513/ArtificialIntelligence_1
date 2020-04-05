@@ -304,7 +304,7 @@ std::map<State, double> policyEvaluation(std::map<State, Actions> &pi, std::map<
 }
 
 // based on AIMA 3rd ed, Figure 17.7
-int modifiedPolicyIteration(MDP &mdp, GridWorld &grid) {
+std::map<State, Actions> modifiedPolicyIteration(MDP &mdp, GridWorld &grid) {
     // init
     std::map<State, Actions> pi;
     std::map<State, double> U;
@@ -323,6 +323,7 @@ int modifiedPolicyIteration(MDP &mdp, GridWorld &grid) {
 //               unchanged? <- false
         }
     } while (unchanged);
+    return pi;
 }
 
 
