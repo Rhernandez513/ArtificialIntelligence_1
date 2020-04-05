@@ -3,11 +3,21 @@ TO BUILD:
 TO RUN:
 	./cmake-build-debug/mdp "resources/mdp_input.txt"
 
-Let's try something new and attempt this assignment in C++17
+INFO:
+Input format should be the same as mdp_input.txt example provided (whitespace, colons, etc)
+
+To view Value Iteration ONLY place a '1' before input
+	example:  ./mdp 1 "/path/to/input.txt"
+To view Policy Iteration ONLY place a '2' before input
+	example:  ./mdp 2 "/path/to/input.txt"
+To view BOTH omit the number before input
+	example:  ./mdp "/path/to/input.txt"
+
+Assignment written in C++17
+built on a little Endian macOS 10.15.4 using clang 11.0.0, cmake 3.15.3, and GNU Make 3.81
+
 
 Main idea is to implement Value & Modified Policy iteration for a Markov Decision Process
 Figures 17.4 & 17.7 in AIMA V3 respectively
 
 These are examples of reinforcement learning algorithms
-
-P.S.  hope this goes well, else I'll have to try Python or Java

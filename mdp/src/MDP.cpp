@@ -11,6 +11,21 @@ MDP::MDP(const std::vector<double> &transitionProbabilities, double epsilon, dou
 
 MDP::~MDP() {}
 
+bool MDP::isTerminalOrWall(State &state, GridWorld &grid) {
+    for(auto &pair: grid.getTerminalCoordinates()) {
+        if(state.getX() == pair.getX() && state.getY() == pair.getY()) {
+            return true;
+        }
+    }
+    for(auto &pair : grid.getPillars()) {
+        if(state.getX() == pair.first && state.getY() == pair.second) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 // this needs to return the weighted reward state to statePrime
 double MDP::transitionModel(GridWorld &grid, State statePrime, State state, Actions action) {
 
@@ -258,17 +273,21 @@ std::set<Actions> MDP::A(State &s, GridWorld &grid) {
     int height = grid.getHeight();
     int x = s.getX();
     int y = s.getY();
-    if(y < height) {
-        actions.insert(Actions::Up);
-    }
-    if(x < width) {
-        actions.insert(Actions::Right);
-    }
-    if(x > 1) {
-        actions.insert(Actions::Left);
-    }
-    if(y > 1) {
-        actions.insert(Actions::Down);
+    if(this->isTerminalOrWall(s, grid)) {
+       actions.insert(Actions::None);
+    } else {
+        if(y < height) {
+            actions.insert(Actions::Up);
+        }
+        if(x < width) {
+            actions.insert(Actions::Right);
+        }
+        if(x > 1) {
+            actions.insert(Actions::Left);
+        }
+        if(y > 1) {
+            actions.insert(Actions::Down);
+        }
     }
     return actions;
 }

@@ -24,6 +24,8 @@ public:
 
     virtual ~MDP();
 
+    bool isTerminalOrWall(State &state, GridWorld &grid);
+
     const std::vector<double> &getTransitionProbabilities() const;
 
     void setTransitionProbabilities(const std::vector<double> &transitionProbabilities);

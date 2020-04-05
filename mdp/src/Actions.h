@@ -7,8 +7,7 @@
 
 
 enum class Actions {
-    Up = 1, Left, Right, Down
+    None=0, Up, Left, Right, Down
 };
-
 
 #endif //MDP_ACTIONS_H

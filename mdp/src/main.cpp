@@ -51,12 +51,77 @@ std::vector<std::string> split(const std::string &str,
     return strings;
 }
 
+std::string getTextForEnum(Actions action) {
+    std::string val;
+    switch(action) {
+        case Actions::None:
+            val = "None";
+            break;
+        case Actions::Up:
+            val = "Up";
+            break;
+        case Actions::Left:
+            val = "Left";
+            break;
+        case Actions::Right:
+            val = "Right";
+            break;
+        case Actions::Down:
+            val = "Down";
+            break;
+        default:
+            val = "something went wrong";
+            break;
+    }
+    return val;
+}
+
 // Example
 //     3
 //     2
 // y ^ 1  2  3
 //    x >
-std::string prettyPrintGrid(std::map<State, double> const &utilityVector, GridWorld &gridWorld, double epsilon) {
+std::string prettyPrintGridPolicy(std::map<State, Actions> pi, GridWorld &gridWorld, double epsilon) {
+
+    int x = 1;
+    int width = gridWorld.getWidth();
+    int y = gridWorld.getHeight();
+
+    std::stringstream s;
+
+    int stateCount = pi.size();
+    while(1) {
+        if(stateCount == 0) { break; }
+        for(auto &v : pi) {
+            if (v.first.getX() == x && v.first.getY() == y) {
+                --stateCount;
+                if(v.first.getReward() == 0) {
+                    s << " " << "None" << " ";
+                } else {
+                    s << " " << getTextForEnum(v.second) << " ";
+                }
+                if(v.first.getX() == width) {
+                    s << std::endl;
+                }
+                break;
+            }
+        }
+        if(x == width) {
+            x = 1;
+            --y;
+        } else {
+            ++x;
+        }
+    }
+
+    return s.str();
+}
+// Example
+//     3
+//     2
+// y ^ 1  2  3
+//    x >
+std::string prettyPrintGridValue(std::map<State, double> const &utilityVector, GridWorld &gridWorld, double epsilon) {
 
     std::stringstream s;
     s << epsilon;
@@ -118,40 +183,44 @@ State getStatePrime(std::vector<State> allStates, State state, Actions action) {
         case Actions::Down:
             protoStatePrime = State(x, --y, 0.0);
             break;
+        case Actions::None:
+            return state;
     }
     for(auto &s : allStates) {
         if(s == protoStatePrime) {
             return s;
         }
     }
+    return state;
 }
 
-bool isTerminalOrWall(State &state, GridWorld &grid) {
-    for(auto &pair: grid.getTerminalCoordinates()) {
-        if(state.getX() == pair.getX() && state.getY() == pair.getY()) {
-            return true;
-        }
-    }
-    for(auto &pair : grid.getPillars()) {
-        if(state.getX() == pair.first && state.getY() == pair.second) {
-            return true;
-        }
-    }
-    return false;
-}
-
-double bellmanEquation(std::set<Actions> &actions, MDP &mdp, State const &state, GridWorld &grid, std::map<State, double> &U) {
-    std::vector<double> protoUtilities;
+//  max(a in A(s)) in sigma_s'{ P(s'|s,a) U[s']}
+std::pair<double, Actions> maxUtility(std::set<Actions> &actions, MDP &mdp, State const &state, GridWorld &grid, std::map<State, double> &U) {
+    std::vector<std::pair<double, Actions>> protoUtilities;
     for(auto &action : actions) {
         State statePrime = getStatePrime(mdp.getStates(), state, action);
         double weightedTransitionReward = mdp.transitionModel(grid, statePrime, state, action);
-        double utility = U[statePrime];
-        protoUtilities.push_back(weightedTransitionReward * utility);
+        std::pair<double, Actions> p;
+        p.first = weightedTransitionReward * U[statePrime];
+        p.second = action;
+        protoUtilities.push_back(p);
     }
-    double maxUtility = *std::max_element(protoUtilities.begin(), protoUtilities.end());
 
-    return state.getReward() + (mdp.getGamma() * maxUtility);
+    int max = 0;
+    for(int i = 0; i < protoUtilities.size(); ++i) {
+        if(protoUtilities[i].first > protoUtilities[max].first) {
+            max = i;
+        }
+    }
+    return protoUtilities[max];
 }
+
+// Equation 17.6 in AIMA 3rd ed
+// R(s) + gamma * max(a in A(s)) in sigma_s'{ P(s'|s,a) U[s']}
+double bellmanEquation(std::set<Actions> &actions, MDP &mdp, State const &state, GridWorld &grid, std::map<State, double> &U) {
+    std::pair<double, Actions> utility = maxUtility(actions, mdp, state, grid, U);
+    return state.getReward() + (mdp.getGamma() * utility.first);
+};
 
 // Figure 17.4 in AIMA 3rd ed
 // returns a Utility function for each State in MDP
@@ -165,7 +234,7 @@ std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProg
     std::vector<State> states = mdp.getStates();
 
     for(auto &s : states) {
-        if(isTerminalOrWall(s, grid)) {
+        if(mdp.isTerminalOrWall(s, grid)) {
             U[s] = s.getReward();
             UPrime[s] = s.getReward();
         } else {
@@ -178,7 +247,7 @@ std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProg
         delta = 0.0;
         for(auto &state : states) {
             // if terminal state, we don't update it's utility
-            if(isTerminalOrWall(state, grid)) { continue; }
+            if(mdp.isTerminalOrWall(state, grid)) { continue; }
             std::set<Actions> actions = mdp.A(state, grid);
             UPrime[state] = bellmanEquation(actions, mdp, state, grid, U);
             double abs = std::fabs(UPrime[state] - U[state]);
@@ -188,7 +257,7 @@ std::map<State, double> valueIteration(MDP &mdp, GridWorld &grid, bool printProg
         }
         if(printProgress) {
             std::cout << "Value Iteration #" << ++iter << std::endl;
-            std::cout << prettyPrintGrid(U, grid, mdp.getEpsilon());
+            std::cout << prettyPrintGridValue(U, grid, mdp.getEpsilon());
         }
         U = UPrime; // will perform copy operation
     } while(delta < (epsilon * (1 - gamma)) / gamma);
@@ -304,43 +373,83 @@ std::map<State, double> policyEvaluation(std::map<State, Actions> &pi, std::map<
 }
 
 // based on AIMA 3rd ed, Figure 17.7
-std::map<State, Actions> modifiedPolicyIteration(MDP &mdp, GridWorld &grid) {
+std::map<State, Actions> modifiedPolicyIteration(MDP &mdp, GridWorld &grid, bool printProgress) {
     // init
     std::map<State, Actions> pi;
     std::map<State, double> U;
     std::vector<State> states = mdp.getStates();
     srand((unsigned)time(NULL));
     for(auto &s : states) {
-        U[s] = (isTerminalOrWall(s, grid)) ? s.getReward() : mdp.getEpsilon();
+        U[s] = (mdp.isTerminalOrWall(s, grid)) ? s.getReward() : mdp.getEpsilon();
         pi[s] = Actions(rand() % 4 + 1);
     }
     bool unchanged = true;
+    int iter = 0;
     do {
         U = policyEvaluation(pi, U, mdp, grid);
-        for(auto &state: states) {
-//           if max(a in A(s)) in sigma_s'{ P(s'|s,a) U[s']} > sigma_s'{ P(s'| s, pi[s]) * U[s'] } then do
-//               pi[s] <- argmax(a in A(s)) in sigma_s'{ P(s' | s,a) * U[s']
-//               unchanged? <- false
+        for(auto &state : states) {
+            std::set<Actions> actions = mdp.A(state, grid);
+            std::set<Actions> policyForGivenState;
+            policyForGivenState.insert(pi[state]);
+            std::pair<double, Actions> potentialNewPolicyMember = maxUtility(actions, mdp, state, grid, U);
+            if(potentialNewPolicyMember > maxUtility(policyForGivenState, mdp, state, grid, U)) {
+                pi[state] = potentialNewPolicyMember.second;
+                unchanged = false;
+            }
+            if(printProgress) {
+                std::cout << "Policy Iteration #" << ++iter << std::endl;
+                std::cout << prettyPrintGridValue(U, grid, mdp.getEpsilon());
+            }
         }
     } while (unchanged);
+    if(printProgress) {
+        std::cout << "Final Value After Convergence:" << std::endl;
+        std::cout << prettyPrintGridValue(U, grid, mdp.getEpsilon());
+    }
     return pi;
 }
 
 
 int main(int argc, char *argv[]) {
+    int pathArgPlacement;
+    if(argc == 2) {
+       pathArgPlacement = 1;
+    } else {
+        pathArgPlacement = 2;
+    }
+    std::cout << "\nInput format should be the same as mdp_input.txt example provided (whitespace, colons, etc)\n" << std::endl;
+    std::cout << "To view Value Iteration ONLY place a '1' before input" << std::endl;
+    std::cout << "\texample:  ./mdp 1 \"/path/to/input.txt\"" << std::endl;
+    std::cout << "To view Policy Iteration ONLY place a '2' before input" << std::endl;
+    std::cout << "\texample:  ./mdp 2 \"/path/to/input.txt\"" << std::endl;
+    std::cout << "To view BOTH omit the number before input" << std::endl;
+    std::cout << "\texample:  ./mdp \"/path/to/input.txt\"\n" << std::endl;
 
-    std::string fileInput = getLines(argv[1]);
+    std::string fileInput = getLines(argv[pathArgPlacement]);
     std::vector<std::string> lines = split(trim(fileInput), "\n");
 
     GridWorld grid = constructGridWorld(lines[2], lines[6], lines[10]);
 
     MDP mdp = constructMarkovDecisionProcess(lines[18], lines[22], lines[20], lines[14], grid);
     std::map<State, double> utilityVector;
+    if(*argv[1] == '1') {
+        utilityVector = valueIteration(mdp, grid, true);
+        std::cout << "\nFinal Utility Vector (Value-Iteration): " << std::endl;
+        std::cout << prettyPrintGridValue(utilityVector, grid, mdp.getEpsilon()) << std::endl;
+    } else if (*argv[1] == '2') {
+        std::map<State, Actions> pi;
+        pi = modifiedPolicyIteration(mdp, grid, true);
+        std::cout << "Final Policy:" << std::endl;
+        std::cout << prettyPrintGridPolicy(pi, grid, mdp.getEpsilon());
+    } else {
+        utilityVector = valueIteration(mdp, grid, true);
+        std::cout << "\nFinal Utility Vector (Value-Iteration): " << std::endl;
+        std::cout << prettyPrintGridValue(utilityVector, grid, mdp.getEpsilon()) << std::endl;
+        std::map<State, Actions> pi;
+        pi = modifiedPolicyIteration(mdp, grid, true);
+        std::cout << "Final Policy:" << std::endl;
+        std::cout << prettyPrintGridPolicy(pi, grid, mdp.getEpsilon());
+    }
 
-    std::cout << "This version of the assignment is in an incomplete state" << std::endl;
-    std::cout << "Input format should be the same as mdp_input.txt example provided (whitespace, colons, etc)\n" << std::endl;
-    utilityVector = valueIteration(mdp, grid, true);
-    std::cout << "\nFinal Utility Vector (Value-Iteration): " << std::endl;
-    std::cout << prettyPrintGrid(utilityVector, grid, mdp.getEpsilon()) << std::endl;
     return 0;
 }
