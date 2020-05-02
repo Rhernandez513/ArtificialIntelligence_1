@@ -1,4 +1,5 @@
 package com.company.enums;
 
-public class Price {
+public enum Price {
+     $, $$, $$$
 }

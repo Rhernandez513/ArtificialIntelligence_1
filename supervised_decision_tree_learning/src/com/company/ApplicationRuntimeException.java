@@ -1,4 +1,10 @@
 package com.company;
 
-public class ApplicationException extends Exception {
+public class ApplicationRuntimeException extends Exception {
+    public ApplicationRuntimeException() {
+        super();
+    }
+    public ApplicationRuntimeException(String e) {
+        super(e);
+    }
 }

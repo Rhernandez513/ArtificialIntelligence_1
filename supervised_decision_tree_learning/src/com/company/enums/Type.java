@@ -1,4 +1,5 @@
 package com.company.enums;
 
-public class Type {
+public enum Type {
+     French, Thai, Burger, Italian
 }
