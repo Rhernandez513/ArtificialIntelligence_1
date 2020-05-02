@@ -1,0 +1,12 @@
+function DECISION-TREELEARNING(examples, attributes, parent_examples) returns a tree
+    if (examples) is empty then return PLURALITY-VALUE(paren_examples)
+    else if (all examples) have the same classification then return the classification
+    else if (attributes) is empty then return PLURALITY-VALUE(examples)
+    else
+        A <- argmax a in set(attributes) of IMPORTANCE(a, examples)
+        tree <- a new dicision tree with root test A
+        for each value v_k of A do
+            exs <- {e : e in set(examples) and e.A = v_k }
+            subtree <- DECISION-TREE-LEARNING(exs, attributes - A, examples)
+            add a branch to tree with label (A=v_k) and subtree (subtree)
+        return tree
