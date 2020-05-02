@@ -1,0 +1,8 @@
+Prompt:
+    Write a program to implement the decision tree learning algorithm given in figure 18.5 in chapter
+    18 of AIMA (v3) textbook using information gain as the importance function (described in page 704).
+    Print the resulting decision tree.
+
+
+Training data:
+https://github.com/aimacode/aima-data/blob/master/restaurant.csv
