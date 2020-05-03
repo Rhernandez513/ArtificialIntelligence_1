@@ -5,166 +5,189 @@ import com.company.enums.*;
 import java.util.Objects;
 
 public class Example {
-    private Alternative alternative;
-    private Bar bar;
-    private FridayOrSaturday fridayOrSaturday;
-    private Hungry hungry;
-    private Patrons patrons;
-    private Price price;
-    private Raining raining;
-    private Reservation reservation;
-    private Type type;
-    private Estimate estimate;
-    private boolean willWait;
+  private Alternative alternative;
+  private Bar bar;
+  private FridayOrSaturday fridayOrSaturday;
+  private Hungry hungry;
+  private Patrons patrons;
+  private Price price;
+  private Raining raining;
+  private Reservation reservation;
+  private Type type;
+  private Estimate estimate;
+  private boolean willWait;
 
-    @Override
-    public String toString() {
-        return "Example{" +
-                "alternative=" + alternative +
-                ", bar=" + bar +
-                ", fridayOrSaturday=" + fridayOrSaturday +
-                ", hungry=" + hungry +
-                ", patrons=" + patrons +
-                ", price=" + price +
-                ", raining=" + raining +
-                ", reservation=" + reservation +
-                ", type=" + type +
-                ", estimate=" + estimate +
-                ", willWait=" + willWait +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Example{"
+        + "alternative="
+        + alternative
+        + ", bar="
+        + bar
+        + ", fridayOrSaturday="
+        + fridayOrSaturday
+        + ", hungry="
+        + hungry
+        + ", patrons="
+        + patrons
+        + ", price="
+        + price
+        + ", raining="
+        + raining
+        + ", reservation="
+        + reservation
+        + ", type="
+        + type
+        + ", estimate="
+        + estimate
+        + ", willWait="
+        + willWait
+        + '}';
+  }
 
-    public boolean isAlternative() {
-        return this.alternative.equals(Alternative.Yes);
-    }
+  public boolean isAlternative() {
+    return this.alternative.equals(Alternative.Yes);
+  }
 
-    public boolean isBar() {
-        return this.bar.equals(Bar.Yes);
-    }
+  public boolean isBar() {
+    return this.bar.equals(Bar.Yes);
+  }
 
-    public boolean isFridayOrSaturday() {
-        return this.fridayOrSaturday.equals(FridayOrSaturday.Yes);
-    }
+  public boolean isFridayOrSaturday() {
+    return this.fridayOrSaturday.equals(FridayOrSaturday.Yes);
+  }
 
-    public boolean isHungry() {
-        return this.hungry.equals(Hungry.Yes);
-    }
+  public boolean isHungry() {
+    return this.hungry.equals(Hungry.Yes);
+  }
 
-    public boolean isRaining() {
-        return this.raining.equals(Raining.Yes);
-    }
+  public boolean isRaining() {
+    return this.raining.equals(Raining.Yes);
+  }
 
-    public boolean isReservation() {
-        return this.reservation.equals(Reservation.Yes);
-    }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Example example = (Example) o;
-        return willWait == example.willWait &&
-                alternative == example.alternative &&
-                bar == example.bar &&
-                fridayOrSaturday == example.fridayOrSaturday &&
-                hungry == example.hungry &&
-                patrons == example.patrons &&
-                price == example.price &&
-                raining == example.raining &&
-                reservation == example.reservation &&
-                type == example.type &&
-                estimate == example.estimate;
-    }
+  public boolean isReservation() {
+    return this.reservation.equals(Reservation.Yes);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(alternative, bar, fridayOrSaturday, hungry, patrons, price, raining, reservation, type, estimate, willWait);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Example example = (Example) o;
+    return willWait == example.willWait
+        && alternative == example.alternative
+        && bar == example.bar
+        && fridayOrSaturday == example.fridayOrSaturday
+        && hungry == example.hungry
+        && patrons == example.patrons
+        && price == example.price
+        && raining == example.raining
+        && reservation == example.reservation
+        && type == example.type
+        && estimate == example.estimate;
+  }
 
-    public Alternative getAlternative() {
-        return alternative;
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(
+        alternative,
+        bar,
+        fridayOrSaturday,
+        hungry,
+        patrons,
+        price,
+        raining,
+        reservation,
+        type,
+        estimate,
+        willWait);
+  }
 
-    public void setAlternative(Alternative alternative) {
-        this.alternative = alternative;
-    }
+  public Alternative getAlternative() {
+    return alternative;
+  }
 
-    public Bar getBar() {
-        return bar;
-    }
+  public void setAlternative(Alternative alternative) {
+    this.alternative = alternative;
+  }
 
-    public void setBar(Bar bar) {
-        this.bar = bar;
-    }
+  public Bar getBar() {
+    return bar;
+  }
 
-    public FridayOrSaturday getFridayOrSaturday() {
-        return fridayOrSaturday;
-    }
+  public void setBar(Bar bar) {
+    this.bar = bar;
+  }
 
-    public void setFridayOrSaturday(FridayOrSaturday fridayOrSaturday) {
-        this.fridayOrSaturday = fridayOrSaturday;
-    }
+  public FridayOrSaturday getFridayOrSaturday() {
+    return fridayOrSaturday;
+  }
 
-    public Hungry getHungry() {
-        return hungry;
-    }
+  public void setFridayOrSaturday(FridayOrSaturday fridayOrSaturday) {
+    this.fridayOrSaturday = fridayOrSaturday;
+  }
 
-    public void setHungry(Hungry hungry) {
-        this.hungry = hungry;
-    }
+  public Hungry getHungry() {
+    return hungry;
+  }
 
-    public Patrons getPatrons() {
-        return patrons;
-    }
+  public void setHungry(Hungry hungry) {
+    this.hungry = hungry;
+  }
 
-    public void setPatrons(Patrons patrons) {
-        this.patrons = patrons;
-    }
+  public Patrons getPatrons() {
+    return patrons;
+  }
 
-    public Price getPrice() {
-        return price;
-    }
+  public void setPatrons(Patrons patrons) {
+    this.patrons = patrons;
+  }
 
-    public void setPrice(Price price) {
-        this.price = price;
-    }
+  public Price getPrice() {
+    return price;
+  }
 
-    public Raining getRaining() {
-        return raining;
-    }
+  public void setPrice(Price price) {
+    this.price = price;
+  }
 
-    public void setRaining(Raining raining) {
-        this.raining = raining;
-    }
+  public Raining getRaining() {
+    return raining;
+  }
 
-    public Reservation getReservation() {
-        return reservation;
-    }
+  public void setRaining(Raining raining) {
+    this.raining = raining;
+  }
 
-    public void setReservation(Reservation reservation) {
-        this.reservation = reservation;
-    }
+  public Reservation getReservation() {
+    return reservation;
+  }
 
-    public Type getType() {
-        return type;
-    }
+  public void setReservation(Reservation reservation) {
+    this.reservation = reservation;
+  }
 
-    public void setType(Type type) {
-        this.type = type;
-    }
+  public Type getType() {
+    return type;
+  }
 
-    public Estimate getEstimate() {
-        return estimate;
-    }
+  public void setType(Type type) {
+    this.type = type;
+  }
 
-    public void setEstimate(Estimate estimate) {
-        this.estimate = estimate;
-    }
+  public Estimate getEstimate() {
+    return estimate;
+  }
 
-    public boolean willWait() {
-        return willWait;
-    }
+  public void setEstimate(Estimate estimate) {
+    this.estimate = estimate;
+  }
 
-    public void setWillWait(boolean willWait) {
-        this.willWait = willWait;
-    }
+  public boolean willWait() {
+    return willWait;
+  }
+
+  public void setWillWait(boolean willWait) {
+    this.willWait = willWait;
+  }
 }
