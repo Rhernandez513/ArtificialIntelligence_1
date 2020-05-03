@@ -7,8 +7,8 @@ import com.company.enums.WaitEstimate;
 
 import java.util.Objects;
 
-public class Attributes {
-    private boolean alternatives;
+public class Example {
+    private boolean alternative;
     private boolean bar;
     private boolean fridayOrSaturday;
     private boolean hungry;
@@ -20,12 +20,12 @@ public class Attributes {
     private WaitEstimate waitEstimate;
     private boolean willWait;
 
-    public boolean isAlternatives() {
-        return alternatives;
+    public boolean isAlternative() {
+        return alternative;
     }
 
-    public void setAlternatives(boolean alternatives) {
-        this.alternatives = alternatives;
+    public void setAlternative(boolean alternative) {
+        this.alternative = alternative;
     }
 
     public boolean isBar() {
@@ -100,7 +100,7 @@ public class Attributes {
         this.waitEstimate = waitEstimate;
     }
 
-    public boolean isWillWait() {
+    public boolean willWait() {
         return willWait;
     }
 
@@ -112,8 +112,8 @@ public class Attributes {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Attributes that = (Attributes) o;
-        return alternatives == that.alternatives &&
+        Example that = (Example) o;
+        return alternative == that.alternative &&
                 bar == that.bar &&
                 fridayOrSaturday == that.fridayOrSaturday &&
                 hungry == that.hungry &&
@@ -128,13 +128,13 @@ public class Attributes {
 
     @Override
     public int hashCode() {
-        return Objects.hash(alternatives, bar, fridayOrSaturday, hungry, patrons, price, raining, reservation, type, waitEstimate, willWait);
+        return Objects.hash(alternative, bar, fridayOrSaturday, hungry, patrons, price, raining, reservation, type, waitEstimate, willWait);
     }
 
     @Override
     public String toString() {
         return "Attributes{" +
-                "alternatives=" + alternatives +
+                "alternatives=" + alternative +
                 ", bar=" + bar +
                 ", fridayOrSaturday=" + fridayOrSaturday +
                 ", hungry=" + hungry +

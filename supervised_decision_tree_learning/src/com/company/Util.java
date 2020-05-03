@@ -31,13 +31,13 @@ public class Util {
         return builder.toString();
     }
 
-    static List<Attributes> map(String input) throws ApplicationRuntimeException {
+    static List<Example> map(String input) throws ApplicationRuntimeException {
         String [] lines = input.split("\n");
-        List<Attributes> attributes = new ArrayList<>();
+        List<Example> attributes = new ArrayList<>();
         for(String s : lines) {
             String [] data = s.replaceAll("\\s", "").split(",");
-            Attributes atr = new Attributes();
-            atr.setAlternatives(yesOrNo(data[0]));
+            Example atr = new Example();
+            atr.setAlternative(yesOrNo(data[0]));
             atr.setBar(yesOrNo(data[1]));
             atr.setFridayOrSaturday(yesOrNo(data[2]));
             atr.setHungry(yesOrNo(data[3]));
