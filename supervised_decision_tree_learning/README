@@ -1,7 +1,29 @@
-Prompt:
-    Write a program to implement the decision tree learning algorithm given in figure 18.5 in chapter
-    18 of AIMA (v3) textbook using information gain as the importance function (described in page 704).
-    Print the resulting decision tree.
+CS411 - Artificial Intelligence 1
+University of Illinois at Chicago
+Spring 2020
+Professor Piotr Gmytrasiewicz
+
+Idea is to implement a supervised decision learning algorithm as described in Figure 18.5 in AIMA 3rd ed.
+Written using Java 8
+
+TO BUILD:
+```javac Main.java```
+TO RUN:
+```java Main```
+or
+```java Main /path/to/trainingData.csv```
+
+the program expects the training data format to be exactly as provided in the example
+
+if running without a provided input training data, the program expects the following project structure
+
+/resources/restaurant.csv
+/src/com/company/Main.java
+
+
+!!NOTE!!: The way the program PRINTS the tree is not the prettiest, please not the many closing brackets on line 37 of output using restaurant.csv
+            this is because the program PRINTS the tree DEPTH FIRST, but only formats the output by type of Node (Root, Node, Leaf).
+            I wish I was be able to do a "pretty print"
 
 
 Training data:

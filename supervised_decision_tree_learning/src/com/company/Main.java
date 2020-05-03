@@ -10,11 +10,12 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) throws ApplicationRuntimeException {
-        final String path = "resources\\restaurant.csv";
+        final String path = (args.length > 0) ? args[0] : "resources\\restaurant.csv";
         String contents = Util.readFile(path);
         List<Example> examples = Util.map(contents);
         System.out.println("Data read into a structure: ");
         printAttributes(examples);
+        System.out.println();
         Node root = DecisionTreeLearning(examples, new ArrayList<>(Arrays.asList(Attribute.values())), examples);
         System.out.println(root);
     }
