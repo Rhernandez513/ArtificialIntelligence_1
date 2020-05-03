@@ -17,22 +17,6 @@ public class Main {
         printAttributes(examples);
         Node root = DecisionTreeLearning(examples, new ArrayList<>(Arrays.asList(Attribute.values())), examples);
         System.out.println(root);
-
-        Node n = new Node(false);
-
-        Node edgeOne = new Node(false);
-        edgeOne.setParent(n);
-        edgeOne.setAttribute(Attribute.Hun);
-
-        Node edgeTwo = new Node(true);
-        edgeTwo.setParent(n);
-        edgeTwo.setValue(true);
-
-        Node edgeThree = new Node(true);
-        edgeThree.setParent(n);
-        edgeThree.setValue(false);
-
-        n.setChildren(new ArrayList<>(Arrays.asList(edgeOne, edgeTwo, edgeThree)));
     }
 
     static Node DecisionTreeLearning(List<Example> examples, ArrayList<Attribute> attributes, List<Example> parentExamples) {
@@ -57,8 +41,7 @@ public class Main {
             Pair<Attribute, String> attributePair = determineAttribute(v_k);
             subTree.setAttribute(attributePair.getKey());
             subTree.setAttributeDetail(attributePair.getValue());
-            subTree.setParent(tree);
-            tree.getChildren().add(subTree);
+            tree.addChild(subTree);
         }
 
         return tree;
@@ -254,12 +237,19 @@ public class Main {
         return Gain(attribute, examples, p, n);
     }
 
-    static Double B(Double p, Double n) {
-        return p / (p + n);
+    static Double B(Double q) {
+        if(q.equals(0) || q.equals(1)) {
+            return log2(1.0);
+        }
+        return -1 * (q * log2(q) + (1 - q) * log2(1 - q));
+    }
+
+    private static Double log2(Double x) {
+        return (Math.log(x) / Math.log(2) + 1e-10);
     }
 
     static Double Gain(Attribute attribute, List<Example> examples, Double p, Double n) {
-        return B(p, n) - Remainder(attribute, examples, p, n);
+        return B(p / (p+n)) - Remainder(attribute, examples, p, n);
     }
 
     // Remainder(A) = sigma_d_k=1 {(p_k + n_k / p+n) * B(p_k / p_k + n_k)}
@@ -557,7 +547,7 @@ public class Main {
         for(int k = 0; k < d; ++k)  {
             Double p_k = new Double(E[k][0]);
             Double n_k = new Double(E[k][1]);
-            sigma_d_k += (p_k + n_k) / (p + n) * B(p_k, n_k);
+            sigma_d_k += (p_k + n_k) / (p + n) * B(p_k / (p_k + n_k));
         }
 
         return sigma_d_k;

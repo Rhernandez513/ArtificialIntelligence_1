@@ -25,24 +25,26 @@ public class Node {
 
     @Override
     public String toString() {
+        int nesting = 0;
         if(this.isLeaf) {
             final String _val = (value) ? "Yes" : "No";
-            String nodeName = "Leaf";
+            String nodeName = "\n\t\tLeaf";
             return nodeName + "{" +
                     "attribute=" + attributeDetail +
                     ", WillWait=" + _val +
                     "}";
+        } else {
+            String nodeName = "\n\tNode";
+            if(this.parent == null) { nodeName = "Root"; }
+            return nodeName + "{" +
+                    "attribute=" + attribute +
+                    "}, children=" + children;
         }
-        String nodeName = "Node";
-        if(this.parent == null) { nodeName = "Root"; }
-        return nodeName + "{" +
-                "attribute=" + attribute +
-                ", children=" + children +
-                "}";
     }
 
-    public void setChildren(ArrayList<Node> children) {
-        this.children = children;
+    public void addChild(Node child) {
+        child.parent = this;
+        this.children.add(child);
     }
 
     public void setAttribute(Attribute attribute) {
@@ -68,9 +70,4 @@ public class Node {
     public boolean getValue() {
         return this.value;
     }
-
-    public void setParent(Node parent) {
-        this.parent = parent;
-    }
-
 }
