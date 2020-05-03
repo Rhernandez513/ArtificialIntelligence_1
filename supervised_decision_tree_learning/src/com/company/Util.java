@@ -1,9 +1,6 @@
 package com.company;
 
-import com.company.enums.Patrons;
-import com.company.enums.Type;
-import com.company.enums.Price;
-import com.company.enums.WaitEstimate;
+import com.company.enums.*;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -37,35 +34,31 @@ public class Util {
         for(String s : lines) {
             String [] data = s.replaceAll("\\s", "").split(",");
             Example atr = new Example();
-            atr.setAlternative(yesOrNo(data[0]));
-            atr.setBar(yesOrNo(data[1]));
-            atr.setFridayOrSaturday(yesOrNo(data[2]));
-            atr.setHungry(yesOrNo(data[3]));
+            atr.setAlternative(data[0].equals("Yes") ? Alternative.Yes : Alternative.No);
+            atr.setBar(data[1].equals("Yes") ? Bar.Yes : Bar.No);
+            atr.setFridayOrSaturday(data[2].equals("Yes") ? FridayOrSaturday.Yes : FridayOrSaturday.No);
+            atr.setHungry(data[3].equals("Yes") ? Hungry.Yes : Hungry.No);
             atr.setPatrons(parsePatrons(data[4]));
             atr.setPrice(parsePrice(data[5]));
-            atr.setRaining(yesOrNo(data[6]));
-            atr.setReservation(yesOrNo(data[7]));
+            atr.setRaining(data[6].equals("Yes") ? Raining.Yes : Raining.No);
+            atr.setReservation(data[7].equals("Yes") ? Reservation.Yes : Reservation.No);
             atr.setType(parseType(data[8]));
-            atr.setWaitEstimate(parseWaitEstimate(data[9]));
-            atr.setWillWait(yesOrNo(data[10]));
+            atr.setEstimate(parseWaitEstimate(data[9]));
+            atr.setWillWait(data[10].equals("Yes") ? true : false);
             attributes.add(atr);
         }
         return attributes;
     }
 
-    private static boolean yesOrNo(String in) {
-        return in.equals("Yes") ? true : false;
-    }
-
-    private static WaitEstimate parseWaitEstimate(String s) throws ApplicationRuntimeException {
+    private static Estimate parseWaitEstimate(String s) throws ApplicationRuntimeException {
         if(s.equals("0-10")) {
-            return WaitEstimate.Short;
+            return Estimate.Short;
         } else if (s.equals("10-30")) {
-            return WaitEstimate.Moderate;
+            return Estimate.Moderate;
         } else if (s.equals("30-60")) {
-            return WaitEstimate.Long;
+            return Estimate.Long;
         } else if (s.equals(">60")) {
-            return WaitEstimate.Extreme;
+            return Estimate.Extreme;
         }
         throw new ApplicationRuntimeException(String.format("WaitEstimate parse error, was=%s", s));
     }
@@ -91,6 +84,7 @@ public class Util {
         }
         throw new ApplicationRuntimeException(String.format("Price parse error, was=%s", s));
     }
+
     private static Type parseType(String s) throws ApplicationRuntimeException {
         if(s.equals("Burger")) {
             return Type.Burger;
