@@ -25,17 +25,16 @@ public class Node {
 
   @Override
   public String toString() {
-    int nesting = 0;
     if (this.isLeaf) {
       final String _val = (value) ? "Yes" : "No";
-      String nodeName = "\n\t\tLeaf";
+      String nodeName = "Leaf";
       return nodeName + "{" + "attribute=" + attributeDetail + ", WillWait=" + _val + "}";
     } else {
-      String nodeName = "\n\tNode";
+      String nodeName = "Node";
       if (this.parent == null) {
-        nodeName = "Root";
+        nodeName = "\nRoot";
       }
-      return nodeName + "{" + "attribute=" + attribute + "}, children=" + children;
+      return nodeName + "(" + "{" + "attribute=" + attribute + ",\n {children=" + children + "}"+")";
     }
   }
 

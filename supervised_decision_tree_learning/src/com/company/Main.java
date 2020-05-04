@@ -15,9 +15,7 @@ public class Main {
     final String path = (args.length > 0) ? args[0] : "resources"+ File.separator +"restaurant.csv";
     String contents = Util.readFile(path);
     List<Example> examples = Util.map(contents);
-    System.out.println("Data read into a structure: ");
     printAttributes(examples);
-    System.out.println();
     Node root =
         DecisionTreeLearning(
             examples, new ArrayList<>(Arrays.asList(Attribute.values())), examples);
@@ -177,7 +175,6 @@ public class Main {
 
     List<Boolean> Yeses = new ArrayList<>();
     List<Boolean> Nos = new ArrayList<>();
-
     for (Example e : examples) {
       if (e.willWait()) {
         Yeses.add(e.willWait());
@@ -194,8 +191,6 @@ public class Main {
   }
 
   static Boolean allSameClassification(List<Example> examples) {
-    boolean flag = false;
-
     List<Boolean> Yeses = new ArrayList<>();
     List<Boolean> Nos = new ArrayList<>();
     for (Example e : examples) {
@@ -220,19 +215,32 @@ public class Main {
     _max.put(0, -1.0);
     Map.Entry<Integer, Double> max = _max.entrySet().iterator().next();
     for (int i = 0; i < Args.length; ++i) {
-      if (Args[i] > max.getValue()) {
+      if (Args[i] >= max.getValue()) {
         _max = new HashMap<>();
         _max.put(i, Args[i]);
         max = _max.entrySet().iterator().next();
       }
     }
+    // Pretty Print Information Gain
+    StringBuilder builder = new StringBuilder();
+    builder.append("Information Gain=[");
+    for(int i = 0; i < Args.length; ++i) {
+        if(i != Args.length-1) {
+          builder.append(Args[i] + ", ");
+        }
+      builder.append(Args[i]);
+    }
+    System.out.println(builder.toString() + "]");
+
     return attributes.get(max.getKey());
   }
 
   static void printAttributes(List<Example> atrList) {
+    System.out.println("Data read : ");
     for (Example a : atrList) {
       System.out.println(a);
     }
+    System.out.println();
   }
 
   static Double importance(Attribute attribute, List<Example> examples) {
@@ -250,14 +258,14 @@ public class Main {
   }
 
   static Double B(Double q) {
-    if (q.equals(0) || q.equals(1)) {
+    if (q.equals(Double.valueOf(0.0)) || q.equals(Double.valueOf(1.0)) || q.isNaN()) {
       return log2(1.0);
     }
-    return -1 * (q * log2(q) + (1 - q) * log2(1 - q));
+    return -1.0 * (q * log2(q) + (1.0 - q) * log2(1.0 - q));
   }
 
   private static Double log2(Double x) {
-    return (Math.log(x) / Math.log(2) + 1e-10);
+    return (Math.log(x) / Math.log(2) + 1e-12);
   }
 
   static Double Gain(Attribute attribute, List<Example> examples, Double p, Double n) {
