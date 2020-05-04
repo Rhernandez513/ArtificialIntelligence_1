@@ -1,12 +1,13 @@
 package com.company;
 
 import com.company.enums.*;
-import javafx.util.Pair;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -43,7 +44,7 @@ public class Main {
       exs.addAll(EXS(examples, v_k));
       attributes.remove(A);
       Node subTree = DecisionTreeLearning(exs, attributes, examples);
-      Pair<Attribute, String> attributePair = determineAttribute(v_k);
+      Map.Entry<Attribute, String> attributePair = determineAttribute(v_k);
       subTree.setAttribute(attributePair.getKey());
       subTree.setAttributeDetail(attributePair.getValue());
       tree.addChild(subTree);
@@ -52,29 +53,31 @@ public class Main {
     return tree;
   }
 
-  static Pair<Attribute, String> determineAttribute(Object v) {
+  static Map.Entry<Attribute, String> determineAttribute(Object v) {
+    Map<Attribute, String> pair = new HashMap<>();
     if (v instanceof Alternative) {
-      return new Pair<>(Attribute.Alt, "Alternative." + ((Alternative) v).toString());
+      pair.put(Attribute.Alt, "Alternative." + ((Alternative) v).toString());
+      return pair.entrySet().iterator().next();
     } else if (v instanceof Bar) {
-      return new Pair<>(Attribute.Bar, "Bar." + ((Bar) v).toString());
+      pair.put(Attribute.Bar, "Bar." + ((Bar) v).toString());
     } else if (v instanceof FridayOrSaturday) {
-      return new Pair<>(Attribute.Fri, "FriOrSat." + ((FridayOrSaturday) v).toString());
+      pair.put(Attribute.Fri, "FriOrSat." + ((FridayOrSaturday) v).toString());
     } else if (v instanceof Hungry) {
-      return new Pair<>(Attribute.Hun, "Hungry." + ((Hungry) v).toString());
+      pair.put(Attribute.Hun, "Hungry." + ((Hungry) v).toString());
     } else if (v instanceof Raining) {
-      return new Pair<>(Attribute.Rain, "Raining." + ((Raining) v).toString());
+      pair.put(Attribute.Rain, "Raining." + ((Raining) v).toString());
     } else if (v instanceof Reservation) {
-      return new Pair<>(Attribute.Res, "Reservation." + ((Reservation) v).toString());
+      pair.put(Attribute.Res, "Reservation." + ((Reservation) v).toString());
     } else if (v instanceof Patrons) {
-      return new Pair<>(Attribute.Pat, "Patrons." + ((Patrons) v).toString());
+      pair.put(Attribute.Pat, "Patrons." + ((Patrons) v).toString());
     } else if (v instanceof Price) {
-      return new Pair<>(Attribute.Price, "Price." + ((Price) v).toString());
+      pair.put(Attribute.Price, "Price." + ((Price) v).toString());
     } else if (v instanceof Type) {
-      return new Pair<>(Attribute.Type, "Type." + ((Type) v).toString());
+      pair.put(Attribute.Type, "Type." + ((Type) v).toString());
     } else if (v instanceof Estimate) {
-      return new Pair<>(Attribute.Est, "WaitEstimate." + ((Estimate) v).toString());
+      pair.put(Attribute.Est, "WaitEstimate." + ((Estimate) v).toString());
     }
-    return null;
+    return pair.entrySet().iterator().next();
   }
 
   static List<Example> EXS(List<Example> examples, Object v_k) {
@@ -213,10 +216,14 @@ public class Main {
     for (int i = 0; i < Args.length; ++i) {
       Args[i] = importance(attributes.get(i), examples);
     }
-    Pair<Integer, Double> max = new Pair<>(0, -1.0);
+    Map<Integer, Double> _max = new HashMap<>();
+    _max.put(0, -1.0);
+    Map.Entry<Integer, Double> max = _max.entrySet().iterator().next();
     for (int i = 0; i < Args.length; ++i) {
       if (Args[i] > max.getValue()) {
-        max = new Pair<>(i, Args[i]);
+        _max = new HashMap<>();
+        _max.put(i, Args[i]);
+        max = _max.entrySet().iterator().next();
       }
     }
     return attributes.get(max.getKey());
@@ -548,10 +555,10 @@ public class Main {
         }
         break;
     }
-    Double sigma_d_k = new Double(0.000);
+    Double sigma_d_k = Double.valueOf(0.000);
     for (int k = 0; k < d; ++k) {
-      Double p_k = new Double(E[k][0]);
-      Double n_k = new Double(E[k][1]);
+      Double p_k = Double.valueOf(E[k][0]);
+      Double n_k = Double.valueOf(E[k][1]);
       sigma_d_k += (p_k + n_k) / (p + n) * B(p_k / (p_k + n_k));
     }
 
